@@ -5,14 +5,32 @@
 
 ---
 
-## ⚡ Key Highlights
+## ⚡ Multi-Database Architecture
 
-- **Pre-Bundled Master Dataset (253,970+ Medicines)**: Includes the full commercial Indian catalog (*Augmentin, Dolo 650, Calpol, Mastifen, Telma, Pantop, Pan-D, Pantocid DSR, Shelcal, Ecosprin, Thyronorm, Glycomet, Januvia, Forxiga, Jardiance*, etc.) with salt compositions and manufacturers.
-- **Sub-5ms Autocomplete Search**: Multi-tier indexed search with SQLite B-Trees and FTS5 full-text matching to instantly resolve queries and user typos (*"mastifin" ➔ "Mastifen"*).
-- **Chrono-Pharmacology Rules Engine**: Auto-computes food timing rules, empty-stomach timing, bedtime guidance, senior safe daily bounds, adult maximum ceilings, and escalation criticality flags.
-- **Live OpenFDA & Safety Engine**: Real-time Drug-Drug Interaction (DDI) checking, chronic condition contraindications (e.g., Asthma + NSAIDs/Aspirin bronchospasm detection), and boxed warnings with in-memory TTL caching.
-- **Google Gemini Fallback**: Seamless fallback cascade using currently active free-tier models (`gemini-flash-latest`, `gemini-3.5-flash-lite`, `gemini-3.6-flash`) for unlisted novel formulations.
-- **Engineered for Render Free Tier**: Memory footprint ~140 MB RSS (well below Render's 512 MB ceiling) and built-in keep-alive endpoint for 24/7 zero cold-start uptime.
+SimplePharmaAPI acts as an intelligent federated search engine querying across **5 pre-downloaded, complementary pharmaceutical datasets** simultaneously in under 5ms:
+
+| # | Dataset | Records | Description | Source Tag |
+| :--- | :--- | :--- | :--- | :--- |
+| **1** | **Commercial Indian Brands** | ~254,000 SKUs | Complete trade catalog (*Dolo, Augmentin, Mastifen, Telma, Pantop*) with manufacturers, formulations, and market prices. | `1mg_commercial` |
+| **2** | **PMBJP Jan Aushadhi Generics** | 2,479 products | Official Government of India generic formulations with subsidized MRP pricing (e.g. ₹ 8 to ₹ 22). | `pmbjp_jan_aushadhi` |
+| **3** | **CDSCO Approved Combinations** | Curated FDCs | Central Drugs Standard Control Organisation (DCGI Gazette) approved Fixed Dose Combinations with rational indications. | `cdsco_fdc` |
+| **4** | **RxNorm & INN Synonyms** | Standard mapping | International Nonproprietary Names (INN) ↔ USAN cross-nomenclature (*Paracetamol ↔ Acetaminophen*, *Salbutamol ↔ Albuterol*). | `rxnorm_synonyms` |
+| **5** | **MedEase Chrono-Pharmacology** | Clinical Rules | Curated meal/food relation rules, senior daily maximums, critical medication flags, and drug-drug interactions. | `clinical_rules` |
+
+---
+
+### Multi-Database Search Capabilities
+When you send a search request, the engine queries across **all databases simultaneously**, or allows targeted filtering via the optional `source` parameter:
+```bash
+# Search across ALL databases simultaneously (returns commercial brands + Jan Aushadhi generics + CDSCO FDCs)
+GET /api/medicines/search?q=aceclofenac%20paracetamol
+
+# Filter strictly for PMBJP Jan Aushadhi Government Generics with subsidized prices
+GET /api/medicines/search?q=aceclofenac&source=pmbjp_jan_aushadhi
+
+# Filter strictly for CDSCO approved rational combinations
+GET /api/medicines/search?q=telmisartan&source=cdsco_fdc
+```
 
 ---
 
@@ -39,7 +57,7 @@ git push origin main
    - **Runtime**: `Node`
    - **Plan**: `Free` ($0/mo)
    - **Region**: `Singapore` (nearest to India for low latency)
-   - **Build Command**: `npm install && npm run build`
+   - **Build Command**: `npm install --include=dev && npm run build`
    - **Start Command**: `npm run start`
    - **Health Check Path**: `/api/health`
 5. *(Optional)* Under Environment Variables, set your `GEMINI_API_KEY`.
@@ -58,7 +76,7 @@ If you prefer creating a Web Service manually:
    | **Region** | `Singapore` | Lowest latency for users in India & Asia |
    | **Branch** | `main` | Production branch |
    | **Runtime** | `Node` | Node.js environment |
-   | **Build Command** | `npm install && npm run build` | Builds the SQLite catalog and compiles TypeScript |
+   | **Build Command** | `npm install --include=dev && npm run build` | Builds the SQLite catalog and compiles TypeScript |
    | **Start Command** | `npm run start` | Boots the Express server |
    | **Instance Type** | **Free ($0/month)** | 100% free tier with 512 MB RAM |
 4. Click **Advanced** and set:

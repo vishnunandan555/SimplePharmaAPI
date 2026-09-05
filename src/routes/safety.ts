@@ -22,11 +22,11 @@ safetyRouter.get("/medicine-analysis", async (req: Request, res: Response) => {
   const conditionsParam = typeof req.query.conditions === "string" ? req.query.conditions : "";
 
   const activeMeds = activeMedsParam
-    ? activeMedsParam.split(",").map((s) => s.trim()).filter(Boolean)
+    ? activeMedsParam.split(",").map((s: string) => s.trim()).filter(Boolean)
     : [];
 
   const conditions = conditionsParam
-    ? conditionsParam.split(",").map((s) => s.trim()).filter(Boolean)
+    ? conditionsParam.split(",").map((s: string) => s.trim()).filter(Boolean)
     : [];
 
   try {

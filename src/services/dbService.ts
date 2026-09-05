@@ -1,6 +1,6 @@
 // src/services/dbService.ts
-// Hybrid SQLite Master Catalog & In-Memory Medicine Search Engine
-// Automatically leverages pre-indexed SQLite (253,973 medicines) or fallback seed catalog.
+// Hybrid SQLite Multi-Dataset & In-Memory Medicine Search Engine
+// Unifies Commercial Catalog (254k), PMBJP Jan Aushadhi (2.5k), CDSCO FDCs, and RxNorm Synonyms.
 
 import fs from "fs";
 import path from "path";
@@ -16,6 +16,8 @@ export interface SearchResultItem {
   dosage_form: string;
   manufacturer: string;
   therapeutic_class: string;
+  price_inr?: number;
+  source: string;
 }
 
 export interface SearchResponse {
@@ -40,6 +42,7 @@ export interface LookupResponse {
   recommended_frequency: string;
   frequency_label: string;
   is_critical: boolean;
+  price_inr?: number;
   dosage_and_bounds: {
     standard_schedule: string;
     senior_safe_ceiling_mg: number;
@@ -50,6 +53,7 @@ export interface LookupResponse {
     application_number: string;
     source: string;
   };
+  source: string;
 }
 
 let sqliteDb: Database.Database | null = null;
@@ -59,13 +63,25 @@ try {
   const dbPath = path.resolve(process.cwd(), "data/medicines.db");
   if (fs.existsSync(dbPath) && fs.statSync(dbPath).size > 1024 * 1024) {
     sqliteDb = new Database(dbPath, { readonly: true, fileMustExist: true });
-    // Optimize read performance
     sqliteDb.pragma("journal_mode = OFF");
     sqliteDb.pragma("query_only = ON");
-    console.log("💾 SimplePharmaAPI connected to pre-indexed 253,973+ medicine database (data/medicines.db)");
+    console.log("💾 SimplePharmaAPI connected to unified 256,470+ multi-dataset catalog (data/medicines.db)");
   }
 } catch (err) {
-  console.warn("Could not open data/medicines.db, using in-memory catalog:", err);
+  console.warn("Could not open data/medicines.db, using in-memory catalog fallback:", err);
+}
+
+/**
+ * Returns total count of indexed medicines across all loaded datasets
+ */
+export function getIndexedMedicineCount(): number {
+  if (sqliteDb) {
+    try {
+      const row = sqliteDb.prepare("SELECT count(*) as c FROM medicines").get() as any;
+      return row?.c || MASTER_MEDICINE_CATALOG.length;
+    } catch (e) {}
+  }
+  return MASTER_MEDICINE_CATALOG.length;
 }
 
 /**
@@ -79,9 +95,14 @@ function formatStrength(salts: Array<{ salt: string; strength: number; unit: str
 }
 
 /**
- * Search 253k+ records via SQLite with FTS5 and B-Tree prefix indexes
+ * Search across all 3 databases (Commercial Brands, PMBJP Jan Aushadhi, and CDSCO FDCs)
  */
-function searchSqlite(normalizedQuery: string, brandCandidate: string, limit: number): SearchResultItem[] {
+function searchSqlite(
+  normalizedQuery: string,
+  brandCandidate: string,
+  limit: number,
+  sourceFilter?: string
+): SearchResultItem[] {
   if (!sqliteDb) return [];
 
   const resultsMap = new Map<string, SearchResultItem>();
@@ -89,13 +110,20 @@ function searchSqlite(normalizedQuery: string, brandCandidate: string, limit: nu
 
   // 1. Prefix query on brand name
   try {
-    const prefixStmt = sqliteDb.prepare(`
-      SELECT id, brand_name, generic_name, dosage_form, manufacturer, therapeutic_class, ingredients_json
+    let sql = `
+      SELECT id, brand_name, generic_name, dosage_form, manufacturer, therapeutic_class, ingredients_json, price_inr, source
       FROM medicines
-      WHERE normalized_brand LIKE ?
-      LIMIT ?
-    `);
-    const rows = prefixStmt.all(`${sanitized}%`, limit) as any[];
+      WHERE (normalized_brand LIKE ? OR normalized_generic LIKE ?)
+    `;
+    const params: any[] = [`${sanitized}%`, `${sanitized}%`];
+    if (sourceFilter) {
+      sql += ` AND source = ?`;
+      params.push(sourceFilter);
+    }
+    sql += ` LIMIT ?`;
+    params.push(limit);
+
+    const rows = sqliteDb.prepare(sql).all(...params) as any[];
     for (const r of rows) {
       let salts = [];
       try { salts = JSON.parse(r.ingredients_json); } catch {}
@@ -107,21 +135,30 @@ function searchSqlite(normalizedQuery: string, brandCandidate: string, limit: nu
         dosage_form: r.dosage_form,
         manufacturer: r.manufacturer || "Standard Indian Formulation",
         therapeutic_class: r.therapeutic_class || "Pharmacotherapy",
+        price_inr: r.price_inr || undefined,
+        source: r.source || "catalog",
       });
     }
   } catch (err) {}
 
-  // 2. If needed, FTS5 full-text search
+  // 2. FTS5 full-text multi-token search across all datasets
   if (resultsMap.size < limit && sanitized.length >= 3) {
     try {
-      const ftsStmt = sqliteDb.prepare(`
-        SELECT m.id, m.brand_name, m.generic_name, m.dosage_form, m.manufacturer, m.therapeutic_class, m.ingredients_json
+      let ftsSql = `
+        SELECT m.id, m.brand_name, m.generic_name, m.dosage_form, m.manufacturer, m.therapeutic_class, m.ingredients_json, m.price_inr, m.source
         FROM medicines_fts f
         JOIN medicines m ON f.id = m.id
         WHERE medicines_fts MATCH ?
-        LIMIT ?
-      `);
-      const ftsRows = ftsStmt.all(`${sanitized}*`, limit - resultsMap.size) as any[];
+      `;
+      const ftsParams: any[] = [`${sanitized}*`];
+      if (sourceFilter) {
+        ftsSql += ` AND m.source = ?`;
+        ftsParams.push(sourceFilter);
+      }
+      ftsSql += ` LIMIT ?`;
+      ftsParams.push(limit - resultsMap.size);
+
+      const ftsRows = sqliteDb.prepare(ftsSql).all(...ftsParams) as any[];
       for (const r of ftsRows) {
         if (!resultsMap.has(r.id)) {
           let salts = [];
@@ -134,6 +171,8 @@ function searchSqlite(normalizedQuery: string, brandCandidate: string, limit: nu
             dosage_form: r.dosage_form,
             manufacturer: r.manufacturer || "Standard Indian Formulation",
             therapeutic_class: r.therapeutic_class || "Pharmacotherapy",
+            price_inr: r.price_inr || undefined,
+            source: r.source || "catalog",
           });
         }
       }
@@ -144,9 +183,9 @@ function searchSqlite(normalizedQuery: string, brandCandidate: string, limit: nu
 }
 
 /**
- * Perform high-performance multi-tier fuzzy search over the catalog
+ * Perform high-performance multi-tier fuzzy search over all datasets
  */
-export function searchMedicines(query: string, limit: number = 10): SearchResponse {
+export function searchMedicines(query: string, limit: number = 10, sourceFilter?: string): SearchResponse {
   if (!query || !query.trim()) {
     return { query: "", total: 0, results: [] };
   }
@@ -155,9 +194,9 @@ export function searchMedicines(query: string, limit: number = 10): SearchRespon
   const normalizedQuery = parsed.cleaned;
   const brandCandidate = parsed.brandCandidate;
 
-  // 1. Try SQLite if available
+  // 1. Try SQLite unified catalog if available
   if (sqliteDb) {
-    const sqliteResults = searchSqlite(normalizedQuery, brandCandidate, limit);
+    const sqliteResults = searchSqlite(normalizedQuery, brandCandidate, limit, sourceFilter);
     if (sqliteResults.length > 0) {
       return {
         query,
@@ -227,6 +266,7 @@ export function searchMedicines(query: string, limit: number = 10): SearchRespon
     dosage_form: m.record.dosage_form,
     manufacturer: m.record.manufacturer,
     therapeutic_class: m.record.therapeutic_class,
+    source: m.record.source || "in_memory_curated",
   }));
 
   return {
@@ -237,12 +277,12 @@ export function searchMedicines(query: string, limit: number = 10): SearchRespon
 }
 
 /**
- * Resolve detailed clinical specification by brand name or generic
+ * Resolve detailed clinical specification across all datasets
  */
 export function lookupMedicineInCatalog(name: string): LookupResponse | null {
   if (!name || !name.trim()) return null;
 
-  // 1. Try SQLite lookup
+  // 1. Try SQLite multi-database lookup
   if (sqliteDb) {
     const parsed = parseMedicineQuery(name);
     const sanitized = parsed.cleaned.replace(/[^\w\s]/g, " ").trim();
@@ -277,6 +317,7 @@ export function lookupMedicineInCatalog(name: string): LookupResponse | null {
           recommended_frequency: row.recommended_frequency || "1x",
           frequency_label: row.frequency_label || "1x Daily",
           is_critical: Boolean(row.is_critical),
+          price_inr: row.price_inr || undefined,
           dosage_and_bounds: {
             standard_schedule: standardSchedule,
             senior_safe_ceiling_mg: row.senior_safe_ceiling_mg || 100,
@@ -285,8 +326,9 @@ export function lookupMedicineInCatalog(name: string): LookupResponse | null {
           fda_monograph: {
             found: Boolean(row.fda_application_number),
             application_number: row.fda_application_number || "NDA-VERIFIED",
-            source: "US FDA National Drug Code & Label Repository",
+            source: row.source === "cdsco_fdc" ? "CDSCO Gazette (DCGI)" : "US FDA National Drug Code & Label Repository",
           },
+          source: row.source || "master_catalog",
         };
       }
     } catch (err) {}
@@ -331,5 +373,6 @@ export function lookupMedicineInCatalog(name: string): LookupResponse | null {
       application_number: item.fda_application_number || "NDA-VERIFIED",
       source: "US FDA National Drug Code & Label Repository",
     },
+    source: item.source || "in_memory_curated",
   };
 }

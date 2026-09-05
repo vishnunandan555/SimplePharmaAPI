@@ -1,0 +1,26 @@
+{
+  "synonyms": {
+    "paracetamol": { "usan": "acetaminophen", "rxcui": "161", "who_inn": "paracetamol", "brands": ["dolo", "calpol", "crocin", "pacimol", "pyregesic"] },
+    "acetaminophen": { "usan": "acetaminophen", "rxcui": "161", "who_inn": "paracetamol", "brands": ["tylenol", "panadol"] },
+    "salbutamol": { "usan": "albuterol", "rxcui": "435", "who_inn": "salbutamol", "brands": ["asthalin", "ventorlin", "proventil", "ventolin"] },
+    "albuterol": { "usan": "albuterol", "rxcui": "435", "who_inn": "salbutamol", "brands": ["proair", "ventolin"] },
+    "lignocaine": { "usan": "lidocaine", "rxcui": "6387", "who_inn": "lidocaine", "brands": ["xylocaine", "loxit"] },
+    "lidocaine": { "usan": "lidocaine", "rxcui": "6387", "who_inn": "lidocaine", "brands": ["xylocaine"] },
+    "frusemide": { "usan": "furosemide", "rxcui": "4603", "who_inn": "furosemide", "brands": ["lasix", "frusix"] },
+    "furosemide": { "usan": "furosemide", "rxcui": "4603", "who_inn": "furosemide", "brands": ["lasix"] },
+    "amoxycillin": { "usan": "amoxicillin", "rxcui": "723", "who_inn": "amoxicillin", "brands": ["mox", "novamox", "amoxil"] },
+    "amoxicillin": { "usan": "amoxicillin", "rxcui": "723", "who_inn": "amoxicillin", "brands": ["amoxil", "novamox"] },
+    "ketotifen": { "usan": "ketotifen", "rxcui": "6135", "who_inn": "ketotifen", "brands": ["mastifen", "zaditor", "alaway"] },
+    "mastifen": { "usan": "ketotifen", "rxcui": "6135", "who_inn": "ketotifen", "brands": ["mastifen"] },
+    "levothyroxine": { "usan": "levothyroxine", "rxcui": "6358", "who_inn": "levothyroxine", "brands": ["thyronorm", "eltroxin", "synthroid", "levoxyl", "thyrox"] },
+    "thyronorm": { "usan": "levothyroxine", "rxcui": "6358", "who_inn": "levothyroxine", "brands": ["thyronorm"] },
+    "metformin": { "usan": "metformin", "rxcui": "6809", "who_inn": "metformin", "brands": ["glycomet", "cetapin", "glucophage", "forminal"] },
+    "glycomet": { "usan": "metformin", "rxcui": "6809", "who_inn": "metformin", "brands": ["glycomet"] },
+    "telmisartan": { "usan": "telmisartan", "rxcui": "54881", "who_inn": "telmisartan", "brands": ["telma", "telmikind", "micardis", "cresar", "telsartan"] },
+    "telma": { "usan": "telmisartan", "rxcui": "54881", "who_inn": "telmisartan", "brands": ["telma"] },
+    "pantoprazole": { "usan": "pantoprazole", "rxcui": "40790", "who_inn": "pantoprazole", "brands": ["pantop", "pan 40", "pantocid", "protonix"] },
+    "pantop": { "usan": "pantoprazole", "rxcui": "40790", "who_inn": "pantoprazole", "brands": ["pantop"] },
+    "aspirin": { "usan": "aspirin", "rxcui": "1191", "who_inn": "acetylsalicylic acid", "brands": ["ecosprin", "disprin", "bayer aspirin"] },
+    "ecosprin": { "usan": "aspirin", "rxcui": "1191", "who_inn": "acetylsalicylic acid", "brands": ["ecosprin"] }
+  }
+}

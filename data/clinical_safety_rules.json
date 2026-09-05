@@ -1,0 +1,95 @@
+{
+  "food_timing_protocols": [
+    {
+      "generic_key": "levothyroxine",
+      "timing_rule": "empty_stomach_before_food",
+      "badge_label": "☕ Empty Stomach (45m Before Morning Tea)",
+      "instruction": "Take on an empty stomach with a full glass of water, at least 45 to 60 minutes before morning tea, coffee, or breakfast.",
+      "clinical_rationale": "Dietary fiber, calcium, and tannins in tea/coffee bind levothyroxine and severely impair intestinal absorption.",
+      "icon": "Coffee"
+    },
+    {
+      "generic_key": "ketotifen",
+      "timing_rule": "with_or_after_food",
+      "badge_label": "🌙 With Food / At Bedtime",
+      "instruction": "Take with food or immediately after dinner / at bedtime to reduce stomach irritation and transient drowsiness.",
+      "clinical_rationale": "Food mitigates gastric discomfort and bedtime dosing counteracts mild transient sedation.",
+      "icon": "Moon"
+    },
+    {
+      "generic_key": "metformin",
+      "timing_rule": "with_meals",
+      "badge_label": "🍽️ Take With Meals",
+      "instruction": "Take with or immediately after main meals (breakfast / dinner).",
+      "clinical_rationale": "Administration with food significantly reduces gastrointestinal adverse effects such as nausea, cramps, and diarrhea.",
+      "icon": "Utensils"
+    },
+    {
+      "generic_key": "pantoprazole",
+      "timing_rule": "empty_stomach_before_food",
+      "badge_label": "🌅 30m Before Breakfast",
+      "instruction": "Take 30 to 60 minutes before morning breakfast with water.",
+      "clinical_rationale": "Proton pump inhibitors require actively secreting parietal cells triggered by meal consumption for maximal acid suppression.",
+      "icon": "Sunrise"
+    },
+    {
+      "generic_key": "atorvastatin",
+      "timing_rule": "after_food_or_bedtime",
+      "badge_label": "🌙 Bedtime / Evening",
+      "instruction": "Take once daily in the evening or at bedtime with or without food.",
+      "clinical_rationale": "Hepatic cholesterol synthesis peaks during the nocturnal fasting state.",
+      "icon": "Moon"
+    },
+    {
+      "generic_key": "aspirin",
+      "timing_rule": "strictly_after_food",
+      "badge_label": "🍽️ Strictly After Food",
+      "instruction": "Take strictly after a full meal with a full glass of water.",
+      "clinical_rationale": "Minimizes direct gastric mucosal irritation and reduces risk of gastrointestinal micro-bleeding.",
+      "icon": "Utensils"
+    }
+  ],
+  "ddi_rules": [
+    {
+      "agent_a": "aspirin",
+      "agent_b": "ibuprofen",
+      "severity": "critical",
+      "effect": "Synergistic gastrointestinal ulceration, mucosal bleeding, and additive nephrotoxicity.",
+      "recommendation": "Avoid concurrent use of multiple NSAIDs. Use paracetamol where appropriate."
+    },
+    {
+      "agent_a": "telmisartan",
+      "agent_b": "spironolactone",
+      "severity": "warning",
+      "effect": "Risk of severe hyperkalemia and cardiac dysrhythmias.",
+      "recommendation": "Monitor serum potassium and renal function periodically."
+    },
+    {
+      "agent_a": "levothyroxine",
+      "agent_b": "calcium",
+      "severity": "warning",
+      "effect": "Chelation and marked reduction of thyroid hormone absorption.",
+      "recommendation": "Separate administration by at least 2 to 4 hours."
+    }
+  ],
+  "condition_contraindications": [
+    {
+      "condition_keyword": "asthma",
+      "drug_keyword": "aspirin",
+      "severity": "critical",
+      "explanation": "Contraindicated: NSAIDs trigger acute bronchospasm and severe respiratory crises in patients with reactive airway disease (AERD)."
+    },
+    {
+      "condition_keyword": "asthma",
+      "drug_keyword": "ibuprofen",
+      "severity": "critical",
+      "explanation": "Contraindicated: NSAIDs trigger acute bronchospasm and severe respiratory crises in patients with reactive airway disease (AERD)."
+    },
+    {
+      "condition_keyword": "ulcer",
+      "drug_keyword": "aspirin",
+      "severity": "warning",
+      "explanation": "Caution: NSAIDs inhibit protective gastric prostaglandins, aggravating ulceration and bleeding risk."
+    }
+  ]
+}

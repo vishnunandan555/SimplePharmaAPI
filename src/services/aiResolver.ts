@@ -116,6 +116,7 @@ Output ONLY a valid JSON object matching this exact TypeScript structure:
           application_number: parsedJson.fda_application_number || "AI-ESTIMATED",
           source: `Gemini (${model}) Clinical Pharmacopeia Synthesizer`,
         },
+        source: "gemini_clinical_synthesizer",
       };
     } catch (err) {
       lastError = err;
@@ -167,5 +168,6 @@ function resolveWithHeuristics(medicineName: string, parsed: ReturnType<typeof p
       application_number: "UNLISTED",
       source: "SimplePharmaAPI Heuristic Resolver",
     },
+    source: "heuristic_clinical_resolver",
   };
 }
