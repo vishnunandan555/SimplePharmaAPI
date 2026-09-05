@@ -1,6 +1,7 @@
 // src/services/dbService.ts
 // Hybrid SQLite Multi-Dataset & In-Memory Medicine Search Engine
 // Unifies Commercial Catalog (254k), PMBJP Jan Aushadhi (2.5k), CDSCO FDCs, and RxNorm Synonyms.
+// Includes chemical composition lookup and reverse salt-to-brand search.
 
 import fs from "fs";
 import path from "path";
@@ -53,6 +54,17 @@ export interface LookupResponse {
     application_number: string;
     source: string;
   };
+  source: string;
+}
+
+export interface CompositionResponse {
+  input: string;
+  brand_name: string;
+  generic_name: string;
+  dosage_form: string;
+  composition_summary: string;  // e.g. "Ketotifen 1mg"
+  active_ingredients: Array<{ salt: string; strength: number; unit: string }>;
+  is_fixed_dose_combination: boolean;  // true if more than one salt
   source: string;
 }
 
@@ -375,4 +387,94 @@ export function lookupMedicineInCatalog(name: string): LookupResponse | null {
     },
     source: item.source || "in_memory_curated",
   };
+}
+
+/**
+ * searchBySalt — Find all medicines that contain a specific salt / active chemical.
+ *
+ * Uses SQLite JSON search when db is available; falls back to in-memory catalog.
+ * Example: searchBySalt("Ketotifen") → all brands with Ketotifen as an ingredient.
+ */
+export function searchBySalt(salt: string, limit: number = 20, sourceFilter?: string): SearchResultItem[] {
+  if (!salt || !salt.trim()) return [];
+
+  const normalizedSalt = salt.toLowerCase().replace(/[^a-z0-9]/g, "");
+
+  // ── 1. SQLite path ─────────────────────────────────────────────────────────
+  if (sqliteDb) {
+    try {
+      // ingredients_json is stored as a JSON array of { salt, strength, unit }
+      // We use LIKE on the JSON text for a fast substring match then filter
+      let sql = `
+        SELECT id, brand_name, generic_name, dosage_form, manufacturer,
+               therapeutic_class, ingredients_json, price_inr, source
+        FROM medicines
+        WHERE LOWER(REPLACE(REPLACE(ingredients_json, ' ', ''), '-', '')) LIKE ?
+      `;
+      const params: any[] = [`%${normalizedSalt}%`];
+
+      if (sourceFilter) {
+        sql += ` AND source = ?`;
+        params.push(sourceFilter);
+      }
+      sql += ` ORDER BY LENGTH(brand_name) ASC LIMIT ?`;
+      params.push(limit);
+
+      const rows = sqliteDb.prepare(sql).all(...params) as any[];
+
+      // Confirm the salt truly appears in the parsed ingredients (avoid false substring hits)
+      const confirmed: SearchResultItem[] = [];
+      for (const r of rows) {
+        let salts: Array<{ salt: string; strength: number; unit: string }> = [];
+        try { salts = JSON.parse(r.ingredients_json); } catch {}
+
+        const matched = salts.some((ing) =>
+          ing.salt.toLowerCase().replace(/[^a-z0-9]/g, "").includes(normalizedSalt)
+        );
+
+        if (matched) {
+          confirmed.push({
+            id: r.id,
+            brand_name: r.brand_name,
+            generic_name: r.generic_name,
+            strength: formatStrength(salts),
+            dosage_form: r.dosage_form,
+            manufacturer: r.manufacturer || "Standard Indian Formulation",
+            therapeutic_class: r.therapeutic_class || "Pharmacotherapy",
+            price_inr: r.price_inr || undefined,
+            source: r.source || "catalog",
+          });
+        }
+
+        if (confirmed.length >= limit) break;
+      }
+
+      if (confirmed.length > 0) return confirmed;
+    } catch (err) {
+      console.warn("searchBySalt SQLite error:", err);
+    }
+  }
+
+  // ── 2. In-memory catalog fallback ─────────────────────────────────────────
+  const results: SearchResultItem[] = [];
+  for (const item of MASTER_MEDICINE_CATALOG) {
+    const hasSalt = item.active_ingredients.some((ing) =>
+      ing.salt.toLowerCase().replace(/[^a-z0-9]/g, "").includes(normalizedSalt)
+    );
+    if (hasSalt) {
+      if (sourceFilter && item.source !== sourceFilter) continue;
+      results.push({
+        id: item.id,
+        brand_name: item.brand_name,
+        generic_name: item.generic_name,
+        strength: formatStrength(item.active_ingredients),
+        dosage_form: item.dosage_form,
+        manufacturer: item.manufacturer,
+        therapeutic_class: item.therapeutic_class,
+        source: item.source || "in_memory_curated",
+      });
+      if (results.length >= limit) break;
+    }
+  }
+  return results;
 }

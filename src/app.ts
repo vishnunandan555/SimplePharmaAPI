@@ -9,6 +9,7 @@ import { healthRouter } from "./routes/health.js";
 import { searchRouter } from "./routes/search.js";
 import { lookupRouter } from "./routes/lookup.js";
 import { safetyRouter } from "./routes/safety.js";
+import { compositionRouter, bySaltRouter } from "./routes/composition.js";
 
 export const app = express();
 
@@ -28,12 +29,17 @@ app.get("/", (_req: Request, res: Response) => {
       health: "GET /api/health",
       search: "GET /api/medicines/search?q={query}&limit={limit}",
       lookup: "GET /api/medicines/lookup?name={medicine_name}",
+      composition: "GET /api/medicines/composition?name={medicine_name}",
+      by_salt: "GET /api/medicines/by-salt?salt={chemical_name}&limit={n}",
       safety: "GET /api/safety/medicine-analysis?drug={drug_name}&active_meds={med1,med2}&conditions={cond1,cond2}",
     },
     sample_queries: [
       "/api/medicines/search?q=mastifen",
       "/api/medicines/search?q=dolo%20650",
       "/api/medicines/lookup?name=Mastifen%201mg",
+      "/api/medicines/composition?name=Dolo650",
+      "/api/medicines/by-salt?salt=Ketotifen",
+      "/api/medicines/by-salt?salt=Metformin&limit=30",
       "/api/medicines/lookup?name=Telma%2040",
       "/api/safety/medicine-analysis?drug=Aspirin&conditions=Asthma",
     ],
@@ -44,6 +50,8 @@ app.get("/", (_req: Request, res: Response) => {
 app.use("/api/health", healthRouter);
 app.use("/api/medicines/search", searchRouter);
 app.use("/api/medicines/lookup", lookupRouter);
+app.use("/api/medicines/composition", compositionRouter);
+app.use("/api/medicines/by-salt", bySaltRouter);
 app.use("/api/safety", safetyRouter);
 
 // 404 handler
