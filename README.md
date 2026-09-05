@@ -1,58 +1,68 @@
 # SimplePharmaAPI 💊🇮🇳
 
-> **100% Free, Standalone Indian Medicine Search, Clinical Specifications, Safety & Overdose Checker.**  
-> Pre-bundled with **256,470+ Indian medicines & SKUs**. Zero external database accounts required.
+> **Free, standalone Indian medicine search, composition finder, overdose checker & clinical safety API.**  
+> 248,611 active medicines across 5 datasets. Zero external database accounts. Self-hosted on Render.
 
-**Live API:** https://simple-pharma-api.onrender.com
-
----
-
-## ⚡ Multi-Database Architecture
-
-SimplePharmaAPI is an intelligent federated search engine querying across **5 pre-downloaded, complementary pharmaceutical datasets** simultaneously in under 5ms:
-
-| # | Dataset | Records | Description | Source Tag |
-| :--- | :--- | :--- | :--- | :--- |
-| **1** | **Commercial Indian Brands** | ~254,000 SKUs | Complete trade catalog (*Dolo, Augmentin, Mastifen, Telma, Pantop*) with manufacturers, formulations, and market prices. | `1mg_commercial` |
-| **2** | **PMBJP Jan Aushadhi Generics** | 2,479 products | Official Government of India generic formulations with subsidized MRP pricing (e.g. ₹ 8 to ₹ 22). | `pmbjp_jan_aushadhi` |
-| **3** | **CDSCO Approved Combinations** | Curated FDCs | Central Drugs Standard Control Organisation (DCGI Gazette) approved Fixed Dose Combinations with rational indications. | `cdsco_fdc` |
-| **4** | **RxNorm & INN Synonyms** | Standard mapping | International Nonproprietary Names (INN) ↔ USAN cross-nomenclature (*Paracetamol ↔ Acetaminophen*, *Salbutamol ↔ Albuterol*). | `rxnorm_synonyms` |
-| **5** | **MedEase Chrono-Pharmacology** | Clinical Rules | Curated meal/food relation rules, senior daily maximums, critical medication flags, and drug-drug interactions. | `clinical_rules` |
+**Live API:** https://simple-pharma-api.onrender.com  
+**Version:** 1.1.0 · **Status:** ![Health](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fsimple-pharma-api.onrender.com%2Fapi%2Fhealth&query=status&label=API&color=green)
 
 ---
 
-## 📋 Complete API Reference
+## 🗄️ What's Inside — 5 Real Datasets
+
+| # | Dataset | Records | Source | Notes |
+|:--|:--------|--------:|:-------|:------|
+| **1** | **Indian Commercial Brands** | ~246,000 | junioralive/Indian-Medicine-Dataset (Kaggle) | Discontinued medicines filtered out. Brands, manufacturers, prices, composition. |
+| **2** | **PMBJP Jan Aushadhi Generics** | 2,479 | Pradhan Mantri Bhartiya Janaushadhi Pariyojana (GOI) | Official government generic drugs with subsidised MRP pricing. |
+| **3** | **CDSCO Approved FDCs** | 65 | DCGI Gazette (Central Drugs Standard Control Organisation) | DCGI-approved Fixed Dose Combinations across all major therapeutic areas. |
+| **4** | **RxNorm / INN Synonyms** | 90+ | WHO INN + US FDA RxNorm | International name ↔ USAN mappings with RxCUI codes (e.g. Paracetamol ↔ Acetaminophen). |
+| **5** | **Chrono-Pharmacology Rules** | Curated | WHO Model Formulary, BNF, IP 2022 | Food-timing, dose ceilings, senior maximums, critical medication flags. |
+
+> **Total: 248,611 active medicines** — discontinued SKUs are excluded from results.
+
+### Data Quality Transparency
+
+Every `/api/medicines/lookup` response includes an `is_clinical_data_estimated` field:
+
+| Value | Meaning |
+|:------|:--------|
+| `false` | Food rules, dose ceilings, and FDA reference verified against real pharmacopeia data |
+| `true` | Rule-based class estimate — correct directionally, but not individually verified |
+
+**149,253 of 248,611 medicines** (60%) have `is_clinical_data_estimated: false`.
+
+---
+
+## 📋 API Reference
 
 ### All Endpoints
 
 | Method | Endpoint | Description |
-| :--- | :--- | :--- |
-| `GET` | `/api/health` | Service status, uptime, indexed count |
-| `GET` | `/api/medicines/search` | Fuzzy autocomplete search |
+|:-------|:---------|:------------|
+| `GET` | `/api/health` | Service status, version, dataset breakdown |
+| `GET` | `/api/medicines/search` | Fuzzy autocomplete across all datasets |
 | `GET` | `/api/medicines/lookup` | Full clinical spec for one medicine |
-| `GET` | `/api/medicines/composition` | Chemical composition / active ingredients |
-| `GET` | `/api/medicines/by-salt` | Find all brands containing a given salt |
+| `GET` | `/api/medicines/composition` | Active ingredient breakdown |
+| `GET` | `/api/medicines/by-salt` | Find all brands containing a given chemical |
 | `GET` | `/api/safety/medicine-analysis` | DDI + contraindication safety check |
-| `GET` `POST` | `/api/safety/overdose-check` | **Combined dose overdose risk checker** |
+| `GET` `POST` | `/api/safety/overdose-check` | Combined dose overdose risk checker |
 
 ---
 
 ## 💡 Workflow Examples
 
-### Workflow 1: Search-As-You-Type Autocomplete
+### 1 · Search (Autocomplete / Fuzzy)
 
 ```http
 GET /api/medicines/search?q=mastifen&limit=5
 ```
 
-**Query Parameters:**
-| Parameter | Type | Required | Default | Description |
-| :--- | :---: | :---: | :---: | :--- |
-| `q` | `string` | **Yes** | `""` | Search query — brand name, generic, salt, or strength (e.g. `dolo 650`) |
-| `limit` | `number` | No | `10` | Max results (capped at 50) |
-| `source` | `string` | No | *all* | Filter: `1mg_commercial`, `pmbjp_jan_aushadhi`, or `cdsco_fdc` |
+| Param | Type | Required | Default | Description |
+|:------|:----:|:--------:|:-------:|:------------|
+| `q` | string | ✅ | — | Brand name, generic, salt, strength (e.g. `dolo 650`) |
+| `limit` | number | — | 10 | Max results (cap: 50) |
+| `source` | string | — | all | Filter: `1mg_commercial`, `pmbjp_jan_aushadhi`, `cdsco_fdc` |
 
-**Response:**
 ```json
 {
   "query": "mastifen",
@@ -75,54 +85,53 @@ GET /api/medicines/search?q=mastifen&limit=5
 
 ---
 
-### Workflow 2: Clinical Spec Auto-Fill (Lookup)
+### 2 · Lookup (Full Clinical Spec)
 
 ```http
-GET /api/medicines/lookup?name=Mastifen%201mg
+GET /api/medicines/lookup?name=Dolo%20650
 ```
 
-**Response:**
 ```json
 {
-  "input": "Mastifen 1mg",
-  "brand_name": "Mastifen 1mg Tablet",
-  "generic_name": "Ketotifen",
+  "input": "Dolo 650",
+  "brand_name": "Dolo 650 Tablet",
+  "generic_name": "Paracetamol",
   "active_ingredients": [
-    { "salt": "Ketotifen", "strength": 1, "unit": "mg" }
+    { "salt": "Paracetamol", "strength": 650, "unit": "mg" }
   ],
   "dosage_form": "tablet",
   "food_relation": "after",
-  "food_badge": "🌙 With Food / At Bedtime",
-  "food_instruction": "Take with food or immediately after dinner / at bedtime to reduce stomach irritation and transient drowsiness.",
-  "recommended_frequency": "2x",
-  "frequency_label": "2x Morning & Night",
+  "food_badge": "🍽️ After Food",
+  "food_instruction": "Take after food with water. Seniors should cap cumulative daily paracetamol at 3,000 mg to prevent hepatotoxicity.",
+  "recommended_frequency": "3x",
+  "frequency_label": "3x SOS After Food",
   "is_critical": false,
-  "price_inr": 45.1,
+  "price_inr": 30.0,
   "dosage_and_bounds": {
-    "standard_schedule": "1 mg 2x Morning & Night with meals/after food",
-    "senior_safe_ceiling_mg": 2,
-    "max_daily_ceiling_mg": 4
+    "standard_schedule": "650 mg 3x SOS After Food with meals/after food",
+    "senior_safe_ceiling_mg": 3000,
+    "max_daily_ceiling_mg": 4000
   },
   "fda_monograph": {
     "found": true,
-    "application_number": "ANDA204059",
+    "application_number": "ANDA075010",
     "source": "US FDA National Drug Code & Label Repository"
   },
+  "is_clinical_data_estimated": false,
   "source": "1mg_commercial"
 }
 ```
 
+> **`is_clinical_data_estimated: false`** — Paracetamol is in the verified reference table with a real FDA ANDA number.
+
 ---
 
-### Workflow 3: Chemical Composition Finder
-
-Get the active ingredient breakdown of any medicine:
+### 3 · Composition Finder
 
 ```http
 GET /api/medicines/composition?name=Combiflam
 ```
 
-**Response:**
 ```json
 {
   "input": "Combiflam",
@@ -131,7 +140,7 @@ GET /api/medicines/composition?name=Combiflam
   "dosage_form": "tablet",
   "composition_summary": "Ibuprofen 400mg + Paracetamol 325mg",
   "active_ingredients": [
-    { "salt": "Ibuprofen", "strength": 400, "unit": "mg" },
+    { "salt": "Ibuprofen",   "strength": 400, "unit": "mg" },
     { "salt": "Paracetamol", "strength": 325, "unit": "mg" }
   ],
   "is_fixed_dose_combination": true,
@@ -141,34 +150,30 @@ GET /api/medicines/composition?name=Combiflam
 
 ---
 
-### Workflow 4: Find All Brands by Salt (Reverse Lookup)
-
-Find every brand containing a specific active chemical:
+### 4 · Find All Brands by Salt (Reverse Lookup)
 
 ```http
-GET /api/medicines/by-salt?salt=Metformin&limit=20
+GET /api/medicines/by-salt?salt=Metformin&limit=10
 ```
 
-**Query Parameters:**
-| Parameter | Type | Required | Default | Description |
-| :--- | :---: | :---: | :---: | :--- |
-| `salt` | `string` | **Yes** | — | Active ingredient / chemical name (e.g. `Ketotifen`, `Metformin`) |
-| `limit` | `number` | No | `20` | Max results (capped at 100) |
-| `source` | `string` | No | *all* | Filter by dataset |
+| Param | Type | Required | Default | Description |
+|:------|:----:|:--------:|:-------:|:------------|
+| `salt` | string | ✅ | — | Active ingredient / chemical name |
+| `limit` | number | — | 20 | Max results (cap: 100) |
+| `source` | string | — | all | Filter by dataset |
 
-**Response:**
 ```json
 {
   "salt_query": "Metformin",
-  "total": 20,
+  "total": 10,
   "results": [
     {
-      "brand_name": "Bimet Tablet",
+      "brand_name": "Glycomet 500 Tablet",
       "generic_name": "Metformin",
       "strength": "500 mg",
       "dosage_form": "tablet",
-      "manufacturer": "Aretaeus Pharmaceuticals",
-      "price_inr": 18.7,
+      "manufacturer": "USV Ltd",
+      "price_inr": 18.5,
       "source": "1mg_commercial"
     }
   ]
@@ -177,28 +182,25 @@ GET /api/medicines/by-salt?salt=Metformin&limit=20
 
 ---
 
-### Workflow 5: Polypharmacy Overdose Safety Check ⚠️
+### 5 · Polypharmacy Overdose Safety Check ⚠️
 
-> **The most powerful feature.** Check if taking multiple medicines together would result in a dangerous combined dose of any active ingredient.
+Check if combining multiple medicines creates a dangerous cumulative dose of any active salt.
 
-**Scenario:** A patient is prescribed *Dolo 650*, *Calpol 500*, and *Combiflam* — but they all contain Paracetamol. Is this safe?
-
-#### GET (Quick check via query param)
+#### GET (quick — comma-separated)
 ```http
 GET /api/safety/overdose-check?medicines=Dolo650,Calpol500,Combiflam
 ```
 
-#### POST (Recommended — handles names with spaces and special characters)
+#### POST (recommended — handles names with spaces)
 ```http
 POST /api/safety/overdose-check
 Content-Type: application/json
 
-{
-  "medicines": ["Dolo 650", "Calpol 500", "Combiflam"]
-}
+{ "medicines": ["Dolo 650", "Calpol 500", "Combiflam"] }
 ```
 
-**Response:**
+**Limits:** 2–10 medicines per request.
+
 ```json
 {
   "medicines_checked": ["Dolo 650", "Calpol 500", "Combiflam"],
@@ -215,8 +217,8 @@ Content-Type: application/json
       "senior_daily_max_mg": 2000,
       "ceiling_source": "hardcoded_reference",
       "risk_level": "WARNING",
-      "message": "⚠️ WARNING: Combined Paracetamol dose is 1475.0 mg — exceeds safe single-dose limit of 1000 mg. Avoid taking all these medicines at the same time.",
-      "clinical_notes": "Hepatotoxic in overdose. Max 2g/day in hepatic impairment or chronic alcohol use."
+      "message": "⚠️ WARNING: Combined Paracetamol dose is 1475.0 mg — exceeds safe single-dose limit of 1000 mg.",
+      "clinical_notes": "Hepatotoxic in overdose. Max 2g/day in hepatic impairment."
     },
     {
       "salt": "Ibuprofen",
@@ -224,43 +226,38 @@ Content-Type: application/json
       "is_duplicate_across_medicines": false,
       "total_combined_mg": 400,
       "max_safe_single_dose_mg": 800,
-      "max_safe_daily_dose_mg": 3200,
-      "senior_daily_max_mg": 1200,
-      "ceiling_source": "hardcoded_reference",
       "risk_level": "SAFE",
-      "message": "✅ SAFE: Combined Ibuprofen dose is 400.0 mg — within safe single-dose limit of 800 mg."
+      "message": "✅ SAFE: Combined Ibuprofen dose is 400.0 mg — within safe limit of 800 mg."
     }
   ],
   "overall_risk": "WARNING",
   "risk_flags": ["OVERDOSE_RISK_PARACETAMOL", "DUPLICATE_SALT_PARACETAMOL", "HAS_DUPLICATE_SALTS"],
   "unique_salts_found": 2,
   "has_duplicate_salts": true,
-  "disclaimer": "⚠️ MEDICAL DISCLAIMER: This tool provides informational dose-stacking analysis only. It is NOT a substitute for professional medical advice, diagnosis, or treatment. Always consult a licensed physician or pharmacist before combining medications."
+  "disclaimer": "⚠️ MEDICAL DISCLAIMER: Informational analysis only. Not a substitute for professional medical advice."
 }
 ```
 
 **Risk Levels:**
 
 | Level | Icon | Meaning |
-| :--- | :---: | :--- |
-| `SAFE` | ✅ | Combined dose is within safe limits |
-| `CAUTION` | 🟡 | Approaching limit, or same salt in multiple medicines |
+|:------|:----:|:--------|
+| `SAFE` | ✅ | Combined dose within safe limits |
+| `CAUTION` | 🟡 | Within 80% of limit, or same salt in multiple medicines |
 | `WARNING` | ⚠️ | Combined dose exceeds single-dose safe limit |
-| `DANGER` | ⛔ | Combined dose is >150% of safe limit — do NOT take simultaneously |
+| `DANGER` | ⛔ | >150% of safe limit — do NOT take simultaneously |
 | `UNKNOWN` | ❔ | Salt not in reference database — consult pharmacist |
 
-**Ceiling Data Sources (3-tier):**
-1. **Hardcoded Reference** (~110 salts, WHO/FDA/BNF verified, instant) — covers 95%+ of Indian market
-2. **medicines.db Query** (MAX daily ceiling from 256k records) — fills rare gaps
-3. **`UNKNOWN`** — returned for truly exotic/investigational compounds
-
-**Limits:** 2–10 medicines per request. Use POST for names with spaces.
+**Ceiling data sources (3-tier):**
+1. `hardcoded_reference` — ~110 salts, WHO/FDA/BNF verified, instant
+2. `medicines_db` — MAX daily ceiling from 248k records
+3. `UNKNOWN` — exotic/investigational compounds
 
 ---
 
-### Workflow 6: Jan Aushadhi Generic Alternatives
+### 6 · Jan Aushadhi Generic Alternatives
 
-Save up to 80% by finding government generic equivalents:
+Find subsidised government generic equivalents (save up to 80%):
 
 ```http
 GET /api/medicines/search?q=Aceclofenac&source=pmbjp_jan_aushadhi
@@ -268,182 +265,150 @@ GET /api/medicines/search?q=Aceclofenac&source=pmbjp_jan_aushadhi
 
 ---
 
-### Workflow 7: Patient Safety, DDI & Contraindication Analysis
+### 7 · Safety Analysis (DDI + Contraindications)
 
 ```http
 GET /api/safety/medicine-analysis?drug=Aspirin&conditions=Asthma&active_meds=Ibuprofen
 ```
 
-**Query Parameters:**
-| Parameter | Type | Required | Description |
-| :--- | :---: | :---: | :--- |
-| `drug` | `string` | **Yes** | Medicine to evaluate (e.g. `Aspirin`) |
-| `active_meds` | `string` | No | Comma-separated current medications (e.g. `Ibuprofen,Metformin`) |
-| `conditions` | `string` | No | Comma-separated conditions (e.g. `Asthma,Peptic Ulcer`) |
+| Param | Type | Required | Description |
+|:------|:----:|:--------:|:------------|
+| `drug` | string | ✅ | Medicine to evaluate |
+| `active_meds` | string | — | Comma-separated current medications |
+| `conditions` | string | — | Comma-separated patient conditions |
 
 ---
 
-## 📱 Code Integration Cheatsheets
+## 📱 Code Integration
 
-### 1. Flutter / Dart
+### Flutter / Dart
 
 ```dart
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 
 class PharmaService {
-  static const String baseUrl = 'https://simple-pharma-api.onrender.com';
+  static const _base = 'https://simple-pharma-api.onrender.com';
 
-  // Search medicines
-  static Future<List<Map<String, dynamic>>> search(String query) async {
-    final url = Uri.parse('$baseUrl/api/medicines/search?q=${Uri.encodeComponent(query)}&limit=8');
-    final res = await http.get(url);
-    if (res.statusCode == 200) {
-      final data = jsonDecode(res.body);
-      return List<Map<String, dynamic>>.from(data['results']);
-    }
-    return [];
+  // 1. Search
+  static Future<List<Map<String, dynamic>>> search(String q) async {
+    final res = await http.get(Uri.parse('$_base/api/medicines/search?q=${Uri.encodeComponent(q)}&limit=8'));
+    return List<Map<String, dynamic>>.from(jsonDecode(res.body)['results']);
   }
 
-  // Get chemical composition
-  static Future<Map<String, dynamic>?> composition(String medicineName) async {
-    final url = Uri.parse('$baseUrl/api/medicines/composition?name=${Uri.encodeComponent(medicineName)}');
-    final res = await http.get(url);
-    if (res.statusCode == 200) return jsonDecode(res.body);
-    return null;
+  // 2. Full clinical spec
+  static Future<Map<String, dynamic>?> lookup(String name) async {
+    final res = await http.get(Uri.parse('$_base/api/medicines/lookup?name=${Uri.encodeComponent(name)}'));
+    return res.statusCode == 200 ? jsonDecode(res.body) : null;
   }
 
-  // Check overdose risk for multiple medicines
+  // 3. Composition
+  static Future<Map<String, dynamic>?> composition(String name) async {
+    final res = await http.get(Uri.parse('$_base/api/medicines/composition?name=${Uri.encodeComponent(name)}'));
+    return res.statusCode == 200 ? jsonDecode(res.body) : null;
+  }
+
+  // 4. Find all brands by salt
+  static Future<List<Map<String, dynamic>>> bySalt(String salt, {int limit = 20}) async {
+    final res = await http.get(Uri.parse('$_base/api/medicines/by-salt?salt=${Uri.encodeComponent(salt)}&limit=$limit'));
+    return List<Map<String, dynamic>>.from(jsonDecode(res.body)['results']);
+  }
+
+  // 5. Overdose check
   static Future<Map<String, dynamic>?> overdoseCheck(List<String> medicines) async {
-    final url = Uri.parse('$baseUrl/api/safety/overdose-check');
     final res = await http.post(
-      url,
+      Uri.parse('$_base/api/safety/overdose-check'),
       headers: {'Content-Type': 'application/json'},
       body: jsonEncode({'medicines': medicines}),
     );
-    if (res.statusCode == 200) return jsonDecode(res.body);
-    return null;
-  }
-
-  // Full clinical spec
-  static Future<Map<String, dynamic>?> lookup(String medicineName) async {
-    final url = Uri.parse('$baseUrl/api/medicines/lookup?name=${Uri.encodeComponent(medicineName)}');
-    final res = await http.get(url);
-    if (res.statusCode == 200) return jsonDecode(res.body);
-    return null;
-  }
-
-  // Find all brands by salt
-  static Future<List<Map<String, dynamic>>> bySalt(String salt, {int limit = 20}) async {
-    final url = Uri.parse('$baseUrl/api/medicines/by-salt?salt=${Uri.encodeComponent(salt)}&limit=$limit');
-    final res = await http.get(url);
-    if (res.statusCode == 200) {
-      final data = jsonDecode(res.body);
-      return List<Map<String, dynamic>>.from(data['results']);
-    }
-    return [];
+    return res.statusCode == 200 ? jsonDecode(res.body) : null;
   }
 }
 ```
 
-### 2. JavaScript / React / Next.js
+### JavaScript / React / Next.js
 
 ```javascript
-const BASE_URL = "https://simple-pharma-api.onrender.com";
+const BASE = "https://simple-pharma-api.onrender.com";
 
-// Search Autocomplete
-export async function searchMedicines(query, limit = 6) {
-  const res = await fetch(`${BASE_URL}/api/medicines/search?q=${encodeURIComponent(query)}&limit=${limit}`);
-  const data = await res.json();
-  return data.results || [];
-}
-
-// Chemical Composition
-export async function getComposition(name) {
-  const res = await fetch(`${BASE_URL}/api/medicines/composition?name=${encodeURIComponent(name)}`);
-  return await res.json();
-}
-
-// Find All Brands by Salt
-export async function findBySalt(salt, limit = 20) {
-  const res = await fetch(`${BASE_URL}/api/medicines/by-salt?salt=${encodeURIComponent(salt)}&limit=${limit}`);
-  const data = await res.json();
-  return data.results || [];
-}
-
-// Overdose Risk Check (POST — handles spaces in medicine names)
-export async function checkOverdose(medicines) {
-  const res = await fetch(`${BASE_URL}/api/safety/overdose-check`, {
+export const pharmaAPI = {
+  search:       (q, limit = 8)     => fetch(`${BASE}/api/medicines/search?q=${encodeURIComponent(q)}&limit=${limit}`).then(r => r.json()).then(d => d.results),
+  lookup:       (name)             => fetch(`${BASE}/api/medicines/lookup?name=${encodeURIComponent(name)}`).then(r => r.json()),
+  composition:  (name)             => fetch(`${BASE}/api/medicines/composition?name=${encodeURIComponent(name)}`).then(r => r.json()),
+  bySalt:       (salt, limit = 20) => fetch(`${BASE}/api/medicines/by-salt?salt=${encodeURIComponent(salt)}&limit=${limit}`).then(r => r.json()).then(d => d.results),
+  overdoseCheck: (medicines)       => fetch(`${BASE}/api/safety/overdose-check`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ medicines }),
-  });
-  return await res.json();
-}
+  }).then(r => r.json()),
+};
 
-// Full Clinical Spec Lookup
-export async function lookupMedicine(name) {
-  const res = await fetch(`${BASE_URL}/api/medicines/lookup?name=${encodeURIComponent(name)}`);
-  return await res.json();
-}
+// Example usage:
+const results = await pharmaAPI.search("dolo 650");
+const spec    = await pharmaAPI.lookup("Telma 40");
+const risk    = await pharmaAPI.overdoseCheck(["Dolo 650", "Calpol 500", "Combiflam"]);
+console.log(risk.overall_risk); // "WARNING"
 ```
 
-### 3. Python
+### Python
 
 ```python
 import requests
 
-BASE_URL = "https://simple-pharma-api.onrender.com"
+BASE = "https://simple-pharma-api.onrender.com"
 
 # Search
-results = requests.get(f"{BASE_URL}/api/medicines/search", params={"q": "dolo 650"}).json()
-print("Top Result:", results["results"][0]["brand_name"])
+res = requests.get(f"{BASE}/api/medicines/search", params={"q": "dolo 650"}).json()
+print(res["results"][0]["brand_name"])  # Dolo 650 Tablet
 
-# Chemical Composition
-comp = requests.get(f"{BASE_URL}/api/medicines/composition", params={"name": "Combiflam"}).json()
-print("Composition:", comp["composition_summary"])
+# Composition
+comp = requests.get(f"{BASE}/api/medicines/composition", params={"name": "Combiflam"}).json()
+print(comp["composition_summary"])  # Ibuprofen 400mg + Paracetamol 325mg
 
-# Find all brands by salt
-brands = requests.get(f"{BASE_URL}/api/medicines/by-salt", params={"salt": "Metformin", "limit": 10}).json()
+# Find brands by salt
+brands = requests.get(f"{BASE}/api/medicines/by-salt", params={"salt": "Metformin", "limit": 5}).json()
 print(f"Found {brands['total']} Metformin brands")
 
-# Overdose check (POST)
+# Overdose check
 risk = requests.post(
-    f"{BASE_URL}/api/safety/overdose-check",
+    f"{BASE}/api/safety/overdose-check",
     json={"medicines": ["Dolo 650", "Calpol 500", "Combiflam"]}
 ).json()
-print("Overall Risk:", risk["overall_risk"])
+print(f"Overall risk: {risk['overall_risk']}")
 for salt in risk["salt_aggregation"]:
     print(f"  {salt['salt']}: {salt['total_combined_mg']}mg → {salt['risk_level']}")
 ```
 
-### 4. cURL
+### cURL
 
 ```bash
 BASE="https://simple-pharma-api.onrender.com"
 
-# 1. Health check
+# Health (shows dataset breakdown + data quality info)
 curl "$BASE/api/health"
 
-# 2. Search
+# Search
 curl "$BASE/api/medicines/search?q=mastifen"
 
-# 3. Chemical composition
+# Lookup (shows is_clinical_data_estimated + real FDA number)
+curl "$BASE/api/medicines/lookup?name=Dolo%20650"
+
+# Composition
 curl "$BASE/api/medicines/composition?name=Combiflam"
 
-# 4. Find all brands with Metformin
+# Find all brands with a salt
 curl "$BASE/api/medicines/by-salt?salt=Metformin&limit=10"
 
-# 5. Clinical Spec Lookup
-curl "$BASE/api/medicines/lookup?name=Telma%2040"
+# All Jan Aushadhi generics for a salt
+curl "$BASE/api/medicines/by-salt?salt=Metformin&source=pmbjp_jan_aushadhi"
 
-# 6. Safety Analysis (DDI + contraindications)
+# Safety analysis
 curl "$BASE/api/safety/medicine-analysis?drug=Aspirin&conditions=Asthma"
 
-# 7. Overdose check (GET — simple)
+# Overdose check — GET (no spaces in names)
 curl "$BASE/api/safety/overdose-check?medicines=Dolo650,Calpol500,Combiflam"
 
-# 7b. Overdose check (POST — handles spaces, recommended)
+# Overdose check — POST (recommended, handles spaces)
 curl -X POST "$BASE/api/safety/overdose-check" \
   -H "Content-Type: application/json" \
   -d '{"medicines": ["Dolo 650", "Calpol 500", "Combiflam"]}'
@@ -451,54 +416,42 @@ curl -X POST "$BASE/api/safety/overdose-check" \
 
 ---
 
-## 🌐 How to Host on Render (Step-by-Step Guide)
+## 🌐 Deploying on Render
 
-### Step 1: Push to GitHub
-```bash
-git add .
-git commit -m "feat: SimplePharmaAPI with overdose checker"
-git push origin main
-```
+### One-Click (Blueprint)
 
-### Step 2: Deploy on Render
+1. Fork this repo on GitHub
+2. [Render Dashboard](https://dashboard.render.com/) → **New +** → **Blueprint**
+3. Connect your fork — Render auto-reads `render.yaml`
+4. Add `GEMINI_API_KEY` under Environment Variables *(optional — only needed for AI fallback)*
+5. Click **Apply**
 
-#### Option A: Blueprint (Recommended — Zero Config)
-1. Go to [Render Dashboard](https://dashboard.render.com/)
-2. Click **New +** → **Blueprint**
-3. Connect GitHub → select **`SimplePharmaAPI`** repo
-4. Render auto-detects [`render.yaml`](file:///home/vishnunandan555/Projects/SimplePharmaAPI/render.yaml) and pre-fills:
-   - **Runtime**: `Node` | **Plan**: `Free ($0/mo)` | **Region**: `Singapore`
-   - **Build**: `npm install --include=dev && npm run build`
-   - **Start**: `npm run start`
-5. Add `GEMINI_API_KEY` under Environment Variables (optional)
-6. Click **Apply**
-
-#### Option B: Web Service (Manual)
+### Manual Web Service
 
 | Setting | Value |
-| :--- | :--- |
-| **Name** | `simple-pharma-api` |
-| **Region** | `Singapore` (lowest latency for India) |
-| **Branch** | `main` |
-| **Runtime** | `Node` |
-| **Build Command** | `npm install --include=dev && npm run build` |
-| **Start Command** | `npm run start` |
-| **Instance Type** | **Free ($0/month)** |
-| **Health Check Path** | `/api/health` |
+|:--------|:------|
+| Runtime | `Node` |
+| Build Command | `npm install --include=dev && npm run build` |
+| Start Command | `npm run start` |
+| Instance Type | **Free ($0/mo)** |
+| Region | `Singapore` |
+| Health Check Path | `/api/health` |
 
 **Environment Variables:**
-| Key | Value | Required |
-| :--- | :--- | :--- |
-| `NODE_ENV` | `production` | Yes |
-| `GEMINI_API_KEY` | Your Google AI Studio key | Optional |
-| `GEMINI_MODEL` | `gemini-flash-latest` | Optional |
 
-### Step 3: Keep Awake 24/7 (Free)
+| Key | Required | Description |
+|:----|:--------:|:------------|
+| `NODE_ENV` | ✅ | `production` |
+| `GEMINI_API_KEY` | — | Google AI Studio key (enables AI fallback for exotic medicines) |
+| `GEMINI_MODEL` | — | Defaults to `gemini-flash-latest` |
 
-Render free tier sleeps after 15 min inactivity. To prevent cold starts:
-1. Sign up at [cron-job.org](https://cron-job.org/) or [UptimeRobot](https://uptimerobot.com/) (both free)
-2. Create HTTP monitor → URL: `https://simple-pharma-api.onrender.com/api/health`
-3. Set interval: **every 10 minutes**
+### Keep Alive (Free Tier)
+
+Render free tier spins down after 15 min inactivity (~30s cold start). Prevent it with a free uptime monitor:
+
+1. [cron-job.org](https://cron-job.org) or [UptimeRobot](https://uptimerobot.com) (both free)
+2. Monitor URL: `https://simple-pharma-api.onrender.com/api/health`
+3. Interval: **every 10 minutes**
 
 ---
 
@@ -508,21 +461,51 @@ Render free tier sleeps after 15 min inactivity. To prevent cold starts:
 # Install dependencies
 npm install
 
-# Run in development mode (hot-reload)
+# Dev mode (hot-reload via ts-node)
 npm run dev
 
-# Run integration tests
-npm test
-
-# Build production bundle + SQLite catalog
+# Build production bundle + rebuild medicines.db
 npm run build
 
 # Start production server
 npm run start
+
+# Rebuild only the SQLite catalog (after changing data/ files)
+python3 scripts/build_sqlite_catalog.py
 ```
+
+---
+
+## 🏗️ Architecture
+
+```
+Request
+  └── Express Router (app.ts)
+        ├── /api/medicines/search    → dbService.searchMedicines()   [FTS5 SQLite]
+        ├── /api/medicines/lookup    → dbService.lookupMedicineInCatalog()
+        │                            → aiResolver.resolveWithGemini() [AI fallback]
+        ├── /api/medicines/composition → dbService.lookupMedicineInCatalog()
+        ├── /api/medicines/by-salt   → dbService.searchBySalt()
+        ├── /api/safety/medicine-analysis → fdaService + Gemini
+        └── /api/safety/overdose-check → overdoseChecker.checkCombinedDoseOverdose()
+                                          ├── Tier 1: saltCeilings.ts (110 salts, instant)
+                                          ├── Tier 2: medicines.db MAX query
+                                          └── Tier 3: UNKNOWN (consult pharmacist)
+
+Data Layer: data/medicines.db (SQLite, ~178 MB, 248,611 rows, FTS5 indexed)
+  ├── source: 1mg_commercial      (246,068 active brand SKUs)
+  ├── source: pmbjp_jan_aushadhi  (2,479 government generics)
+  └── source: cdsco_fdc           (64 DCGI-approved FDCs)
+```
+
+---
+
+## ⚠️ Medical Disclaimer
+
+This API provides **informational** pharmaceutical data for research, app development, and educational purposes. It is **NOT** a substitute for professional medical advice, clinical decision support, or licensed pharmacist consultation. Always verify dosing with a qualified healthcare professional before clinical use.
 
 ---
 
 ## 📄 License
 
-MIT — 100% free and open for everyone to use, modify, and host.
+MIT — free for everyone to use, fork, and host.

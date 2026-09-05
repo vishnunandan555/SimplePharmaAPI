@@ -79,7 +79,8 @@ try {
     sqliteDb = new Database(dbPath, { readonly: true, fileMustExist: true });
     sqliteDb.pragma("journal_mode = OFF");
     sqliteDb.pragma("query_only = ON");
-    console.log("💾 SimplePharmaAPI connected to unified 256,470+ multi-dataset catalog (data/medicines.db)");
+    const countRow = sqliteDb.prepare("SELECT count(*) as c FROM medicines").get() as any;
+    console.log(`💾 SimplePharmaAPI connected to unified ${(countRow?.c || 248611).toLocaleString()}+ multi-dataset catalog (data/medicines.db)`);
   }
 } catch (err) {
   console.warn("Could not open data/medicines.db, using in-memory catalog fallback:", err);
