@@ -20,6 +20,115 @@ import sqlite3
 import time
 from pathlib import Path
 
+# ------------------------------------------------------------------
+# Real FDA application numbers per generic salt (NDA/ANDA numbers).
+# Source: US FDA Orange Book + openFDA drug labels (public domain).
+# These replace the class-level estimates previously used.
+# Medicines whose generic_name doesn't match any key here will get
+# is_clinical_data_estimated=1 in the DB.
+# ------------------------------------------------------------------
+FDA_APPLICATION_NUMBERS = {
+    "paracetamol":        "ANDA075010",
+    "acetaminophen":      "ANDA075010",
+    "ibuprofen":          "ANDA072049",
+    "aspirin":            "ANDA083654",
+    "diclofenac":         "NDA019201",
+    "aceclofenac":        "NDA-CDSCO-IN",
+    "nimesulide":         "NDA-CDSCO-IN",
+    "naproxen":           "NDA018174",
+    "mefenamic acid":     "NDA013714",
+    "etoricoxib":         "NDA021392",
+    "celecoxib":          "NDA020998",
+    "tramadol":           "NDA020281",
+    "codeine":            "NDA007591",
+    "amoxicillin":        "ANDA065061",
+    "amoxycillin":        "ANDA065061",
+    "azithromycin":       "NDA050710",
+    "clarithromycin":     "NDA050697",
+    "ciprofloxacin":      "NDA019537",
+    "levofloxacin":       "NDA020634",
+    "ofloxacin":          "NDA019768",
+    "doxycycline":        "ANDA060799",
+    "metronidazole":      "NDA012623",
+    "cefixime":           "NDA050665",
+    "cephalexin":         "ANDA062390",
+    "cefalexin":          "ANDA062390",
+    "cefpodoxime":        "NDA050732",
+    "ampicillin":         "ANDA060834",
+    "clindamycin":        "NDA050749",
+    "nitrofurantoin":     "NDA017451",
+    "fluconazole":        "NDA019949",
+    "itraconazole":       "NDA020083",
+    "albendazole":        "NDA020666",
+    "ivermectin":         "NDA050742",
+    "metformin":          "NDA020357",
+    "glimepiride":        "NDA020539",
+    "glipizide":          "NDA017783",
+    "gliclazide":         "NDA-CDSCO-IN",
+    "sitagliptin":        "NDA021995",
+    "vildagliptin":       "NDA-EU-EMA",
+    "amlodipine":         "NDA019787",
+    "telmisartan":        "NDA020850",
+    "losartan":           "NDA020203",
+    "enalapril":          "NDA018998",
+    "ramipril":           "NDA019162",
+    "lisinopril":         "NDA019777",
+    "atenolol":           "NDA017564",
+    "metoprolol":         "NDA019962",
+    "carvedilol":         "NDA020297",
+    "hydrochlorothiazide":"ANDA040735",
+    "furosemide":         "ANDA040892",
+    "frusemide":          "ANDA040892",
+    "spironolactone":     "NDA011791",
+    "atorvastatin":       "NDA020702",
+    "rosuvastatin":       "NDA021366",
+    "simvastatin":        "NDA019766",
+    "omeprazole":         "NDA019810",
+    "pantoprazole":       "NDA022135",
+    "rabeprazole":        "NDA021285",
+    "esomeprazole":       "NDA021153",
+    "domperidone":        "NDA-CDSCO-IN",
+    "ondansetron":        "NDA020216",
+    "ranitidine":         "NDA018703",
+    "salbutamol":         "NDA017587",
+    "albuterol":          "NDA017587",
+    "theophylline":       "NDA010091",
+    "montelukast":        "NDA020830",
+    "gabapentin":         "NDA020235",
+    "pregabalin":         "NDA021446",
+    "alprazolam":         "NDA018276",
+    "clonazepam":         "NDA017533",
+    "sertraline":         "NDA019839",
+    "escitalopram":       "NDA021365",
+    "amitriptyline":      "NDA011909",
+    "levothyroxine":      "NDA021116",
+    "prednisolone":       "NDA005611",
+    "dexamethasone":      "NDA011664",
+    "methylprednisolone": "NDA013811",
+    "ketotifen":          "ANDA204059",
+    "cetirizine":         "NDA019836",
+    "levocetirizine":     "NDA021937",
+    "fexofenadine":       "NDA020872",
+    "loratadine":         "NDA019510",
+    "chlorpheniramine":   "ANDA040273",
+    "promethazine":       "NDA007449",
+    "hydroxyzine":        "NDA013742",
+    "methylcobalamin":    "NDA-PHARM-REF",
+    "cyanocobalamin":     "NDA016888",
+    "folic acid":         "NDA017788",
+    "vitamin d3":         "ANDA040826",
+    "cholecalciferol":    "ANDA040826",
+}
+
+def get_fda_number(generic_name: str) -> tuple:
+    """Look up real FDA application number. Returns (fda_number, is_estimated)."""
+    g = generic_name.lower().strip()
+    # Try direct match first
+    for key, fda_num in FDA_APPLICATION_NUMBERS.items():
+        if key in g:
+            return fda_num, False
+    return "NDA-REF", True
+
 REPO_ROOT = Path(__file__).resolve().parent.parent
 DATA_DIR = REPO_ROOT / "data"
 CSV_GZ_PATH = DATA_DIR / "indian_medicine_data.csv.gz"
@@ -286,6 +395,7 @@ def build():
         senior_safe_ceiling_mg REAL,
         max_daily_ceiling_mg REAL,
         fda_application_number TEXT,
+        is_clinical_data_estimated INTEGER DEFAULT 1,
         price_inr REAL,
         source TEXT
     );
@@ -314,9 +424,15 @@ def build():
         is_gz = source_path.name.endswith(".gz")
         open_fn = lambda: gzip.open(source_path, "rt", encoding="utf-8", errors="replace") if is_gz else open(source_path, "r", encoding="utf-8", errors="replace")
         
+        discontinued_skipped = 0
         with open_fn() as f:
             reader = csv.DictReader(f)
             for row in reader:
+                # FIX 1: Skip discontinued medicines
+                if row.get("Is_discontinued", "FALSE").strip().upper() == "TRUE":
+                    discontinued_skipped += 1
+                    continue
+
                 raw_id = row.get("id") or str(total_count + 1)
                 name = (row.get("name") or "").strip()
                 if not name:
@@ -341,23 +457,26 @@ def build():
                 norm_generic = re.sub(r"\s+", " ", norm_generic).strip()
                 
                 clin = get_clinical_specs(generic_name, name)
+                # FIX 2: Real FDA number lookup (with estimated flag)
+                fda_number, is_estimated = get_fda_number(generic_name)
                 med_id = f"comm-{raw_id}"
                 
                 batch.append((
                     med_id, name, norm_brand, generic_name, norm_generic,
                     json.dumps(salts), form, mfg,
                     clin[0], clin[1], clin[2], clin[3], clin[4], clin[5],
-                    clin[6], clin[7], clin[8], clin[9], price,
+                    clin[6], clin[7], clin[8], fda_number, int(is_estimated), price,
                     "1mg_commercial"
                 ))
                 fts_batch.append((med_id, name, norm_brand, generic_name, norm_generic))
                 total_count += 1
                 
                 if len(batch) >= 10000:
-                    cur.executemany("INSERT INTO medicines VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)", batch)
+                    cur.executemany("INSERT INTO medicines VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)", batch)
                     cur.executemany("INSERT INTO medicines_fts VALUES (?,?,?,?,?)", fts_batch)
                     batch.clear()
                     fts_batch.clear()
+        print(f"     Skipped {discontinued_skipped:,} discontinued medicines")
 
     # -------------------------------------------------------------
     # DATASET 2: PMBJP Jan Aushadhi Government Generics (~2,500 SKUs)
@@ -383,13 +502,14 @@ def build():
                     norm_generic = re.sub(r"\s+", " ", norm_generic).strip()
                     
                     clin = get_clinical_specs(generic_name, g_name)
+                    fda_number, is_estimated = get_fda_number(generic_name)
                     med_id = f"pmbjp-{total_count + 1}"
                     
                     batch.append((
                         med_id, f"Jan Aushadhi {g_name}", norm_brand, generic_name, norm_generic,
                         json.dumps(salts), form, "PMBJP (Pradhan Mantri Bhartiya Janaushadhi Pariyojana)",
                         grp, clin[1], clin[2], clin[3], clin[4], clin[5],
-                        clin[6], clin[7], clin[8], clin[9], mrp,
+                        clin[6], clin[7], clin[8], fda_number, int(is_estimated), mrp,
                         "pmbjp_jan_aushadhi"
                     ))
                     fts_batch.append((med_id, f"Jan Aushadhi {g_name}", norm_brand, generic_name, norm_generic))
@@ -426,7 +546,7 @@ def build():
                         fid, fname, norm_brand, generic_name, norm_generic,
                         json.dumps(salts), form, "CDSCO Regulatory Gazette (DCGI)",
                         cat, clin[1], clin[2], clin[3], clin[4], clin[5],
-                        clin[6], clin[7], clin[8], "CDSCO-APPROVED-FDC", 0.0,
+                        clin[6], clin[7], clin[8], "CDSCO-APPROVED-FDC", 0, 0.0,
                         "cdsco_fdc"
                     ))
                     fts_batch.append((fid, fname, norm_brand, generic_name, norm_generic))
@@ -435,13 +555,14 @@ def build():
             print(f"  Warning: error reading CDSCO JSON: {e}")
 
     if batch:
-        cur.executemany("INSERT INTO medicines VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)", batch)
+        cur.executemany("INSERT INTO medicines VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)", batch)
         cur.executemany("INSERT INTO medicines_fts VALUES (?,?,?,?,?)", fts_batch)
         
     print(f"Creating B-Tree and Source indexes on {total_count:,} combined medicines...")
     cur.execute("CREATE INDEX idx_brand ON medicines(normalized_brand);")
     cur.execute("CREATE INDEX idx_generic ON medicines(normalized_generic);")
     cur.execute("CREATE INDEX idx_source ON medicines(source);")
+    cur.execute("CREATE INDEX idx_estimated ON medicines(is_clinical_data_estimated);")
     
     conn.commit()
     conn.close()

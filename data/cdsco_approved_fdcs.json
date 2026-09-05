@@ -1,220 +1,66 @@
 [
-  {
-    "fdc_id": "FDC-CARD-001",
-    "formulation_name": "Telmisartan + Amlodipine Tablets",
-    "category": "Cardiovascular / Antihypertensive",
-    "salts": [
-      { "salt": "Telmisartan", "strength": 40, "unit": "mg" },
-      { "salt": "Amlodipine", "strength": 5, "unit": "mg" }
-    ],
-    "dosage_form": "tablet",
-    "indication": "Essential hypertension in patients whose blood pressure is not adequately controlled on monotherapy",
-    "regulatory_status": "CDSCO Approved"
-  },
-  {
-    "fdc_id": "FDC-CARD-002",
-    "formulation_name": "Telmisartan + Chlorthalidone Tablets",
-    "category": "Cardiovascular / Antihypertensive",
-    "salts": [
-      { "salt": "Telmisartan", "strength": 40, "unit": "mg" },
-      { "salt": "Chlorthalidone", "strength": 12.5, "unit": "mg" }
-    ],
-    "dosage_form": "tablet",
-    "indication": "Hypertension not adequately controlled on single-agent ARB therapy",
-    "regulatory_status": "CDSCO Approved"
-  },
-  {
-    "fdc_id": "FDC-CARD-003",
-    "formulation_name": "Olmesartan Medoxomil + Amlodipine Tablets",
-    "category": "Cardiovascular / Antihypertensive",
-    "salts": [
-      { "salt": "Olmesartan Medoxomil", "strength": 20, "unit": "mg" },
-      { "salt": "Amlodipine", "strength": 5, "unit": "mg" }
-    ],
-    "dosage_form": "tablet",
-    "indication": "Management of moderate to severe hypertension",
-    "regulatory_status": "CDSCO Approved"
-  },
-  {
-    "fdc_id": "FDC-CARD-004",
-    "formulation_name": "Atorvastatin + Fenofibrate Tablets",
-    "category": "Cardiovascular / Dyslipidemia",
-    "salts": [
-      { "salt": "Atorvastatin", "strength": 10, "unit": "mg" },
-      { "salt": "Fenofibrate", "strength": 145, "unit": "mg" }
-    ],
-    "dosage_form": "tablet",
-    "indication": "Mixed dyslipidemia in patients with elevated LDL-C and triglycerides with low HDL-C",
-    "regulatory_status": "CDSCO Approved"
-  },
-  {
-    "fdc_id": "FDC-CARD-005",
-    "formulation_name": "Rosuvastatin + Aspirin Capsules",
-    "category": "Cardiovascular / Secondary Prevention",
-    "salts": [
-      { "salt": "Rosuvastatin", "strength": 10, "unit": "mg" },
-      { "salt": "Aspirin", "strength": 75, "unit": "mg" }
-    ],
-    "dosage_form": "capsule",
-    "indication": "Prevention of cardiovascular events in patients with coronary artery disease and dyslipidemia",
-    "regulatory_status": "CDSCO Approved"
-  },
-  {
-    "fdc_id": "FDC-DIAB-001",
-    "formulation_name": "Metformin Hydrochloride (SR) + Glimepiride Tablets",
-    "category": "Diabetology / Oral Hypoglycemic",
-    "salts": [
-      { "salt": "Metformin Hydrochloride", "strength": 500, "unit": "mg" },
-      { "salt": "Glimepiride", "strength": 1, "unit": "mg" }
-    ],
-    "dosage_form": "tablet",
-    "indication": "Type 2 diabetes mellitus uncontrolled on metformin monotherapy",
-    "regulatory_status": "CDSCO Approved"
-  },
-  {
-    "fdc_id": "FDC-DIAB-002",
-    "formulation_name": "Metformin Hydrochloride (SR) + Glimepiride + Voglibose Tablets",
-    "category": "Diabetology / Triple Drug Combination",
-    "salts": [
-      { "salt": "Metformin Hydrochloride", "strength": 500, "unit": "mg" },
-      { "salt": "Glimepiride", "strength": 2, "unit": "mg" },
-      { "salt": "Voglibose", "strength": 0.2, "unit": "mg" }
-    ],
-    "dosage_form": "tablet",
-    "indication": "Type 2 diabetes with severe post-prandial hyperglycemia",
-    "regulatory_status": "CDSCO Approved"
-  },
-  {
-    "fdc_id": "FDC-DIAB-003",
-    "formulation_name": "Dapagliflozin + Metformin Hydrochloride (ER) Tablets",
-    "category": "Diabetology / SGLT2i + Biguanide",
-    "salts": [
-      { "salt": "Dapagliflozin", "strength": 10, "unit": "mg" },
-      { "salt": "Metformin Hydrochloride", "strength": 500, "unit": "mg" }
-    ],
-    "dosage_form": "tablet",
-    "indication": "Type 2 diabetes mellitus with cardiovascular and renal risk mitigation",
-    "regulatory_status": "CDSCO Approved"
-  },
-  {
-    "fdc_id": "FDC-DIAB-004",
-    "formulation_name": "Sitagliptin + Metformin Hydrochloride Tablets",
-    "category": "Diabetology / DPP-4i + Biguanide",
-    "salts": [
-      { "salt": "Sitagliptin", "strength": 50, "unit": "mg" },
-      { "salt": "Metformin Hydrochloride", "strength": 500, "unit": "mg" }
-    ],
-    "dosage_form": "tablet",
-    "indication": "Dual mechanism glycemic management in Type 2 Diabetes",
-    "regulatory_status": "CDSCO Approved"
-  },
-  {
-    "fdc_id": "FDC-GAST-001",
-    "formulation_name": "Pantoprazole + Domperidone (SR) Capsules",
-    "category": "Gastroenterology / GERD & Antiemetic",
-    "salts": [
-      { "salt": "Pantoprazole", "strength": 40, "unit": "mg" },
-      { "salt": "Domperidone", "strength": 30, "unit": "mg" }
-    ],
-    "dosage_form": "capsule",
-    "indication": "Gastroesophageal reflux disease associated with impaired upper gastrointestinal motility and nausea",
-    "regulatory_status": "CDSCO Approved"
-  },
-  {
-    "fdc_id": "FDC-GAST-002",
-    "formulation_name": "Rabeprazole Sodium + Levosulpiride (SR) Capsules",
-    "category": "Gastroenterology / Prokinetic PPI",
-    "salts": [
-      { "salt": "Rabeprazole Sodium", "strength": 20, "unit": "mg" },
-      { "salt": "Levosulpiride", "strength": 75, "unit": "mg" }
-    ],
-    "dosage_form": "capsule",
-    "indication": "Severe reflux esophagitis, functional dyspepsia, and gastroparesis",
-    "regulatory_status": "CDSCO Approved"
-  },
-  {
-    "fdc_id": "FDC-RESP-001",
-    "formulation_name": "Montelukast + Levocetirizine Dihydrochloride Tablets",
-    "category": "Respiratory / Allergic Rhinitis & Asthma",
-    "salts": [
-      { "salt": "Montelukast", "strength": 10, "unit": "mg" },
-      { "salt": "Levocetirizine Dihydrochloride", "strength": 5, "unit": "mg" }
-    ],
-    "dosage_form": "tablet",
-    "indication": "Relief of symptoms associated with seasonal and perennial allergic rhinitis and comorbid mild asthma",
-    "regulatory_status": "CDSCO Approved"
-  },
-  {
-    "fdc_id": "FDC-RESP-002",
-    "formulation_name": "Salmeterol + Fluticasone Propionate Inhalation Powder",
-    "category": "Respiratory / LABA + ICS",
-    "salts": [
-      { "salt": "Salmeterol", "strength": 50, "unit": "mcg" },
-      { "salt": "Fluticasone Propionate", "strength": 250, "unit": "mcg" }
-    ],
-    "dosage_form": "inhaler",
-    "indication": "Maintenance treatment of asthma and chronic obstructive pulmonary disease (COPD)",
-    "regulatory_status": "CDSCO Approved"
-  },
-  {
-    "fdc_id": "FDC-ANAL-001",
-    "formulation_name": "Aceclofenac + Paracetamol Tablets",
-    "category": "Analgesics / NSAID Combination",
-    "salts": [
-      { "salt": "Aceclofenac", "strength": 100, "unit": "mg" },
-      { "salt": "Paracetamol", "strength": 325, "unit": "mg" }
-    ],
-    "dosage_form": "tablet",
-    "indication": "Pain and inflammatory symptoms in osteoarthritis, rheumatoid arthritis, and ankylosing spondylitis",
-    "regulatory_status": "CDSCO Approved"
-  },
-  {
-    "fdc_id": "FDC-ANAL-002",
-    "formulation_name": "Aceclofenac + Paracetamol + Serratiopeptidase Tablets",
-    "category": "Analgesics / Anti-inflammatory Enzyme",
-    "salts": [
-      { "salt": "Aceclofenac", "strength": 100, "unit": "mg" },
-      { "salt": "Paracetamol", "strength": 325, "unit": "mg" },
-      { "salt": "Serratiopeptidase", "strength": 15, "unit": "mg" }
-    ],
-    "dosage_form": "tablet",
-    "indication": "Severe post-operative, traumatic, and musculoskeletal inflammation with edema",
-    "regulatory_status": "CDSCO Approved"
-  },
-  {
-    "fdc_id": "FDC-ANAL-003",
-    "formulation_name": "Ibuprofen + Paracetamol Tablets",
-    "category": "Analgesics / Antipyretic",
-    "salts": [
-      { "salt": "Ibuprofen", "strength": 400, "unit": "mg" },
-      { "salt": "Paracetamol", "strength": 325, "unit": "mg" }
-    ],
-    "dosage_form": "tablet",
-    "indication": "Symptomatic relief of mild to moderate dental, post-traumatic, and musculoskeletal pain and pyrexia",
-    "regulatory_status": "CDSCO Approved"
-  },
-  {
-    "fdc_id": "FDC-ANTI-001",
-    "formulation_name": "Amoxycillin + Potassium Clavulanate Tablets",
-    "category": "Anti-infectives / Beta-Lactamase Inhibitor",
-    "salts": [
-      { "salt": "Amoxycillin", "strength": 500, "unit": "mg" },
-      { "salt": "Clavulanic Acid", "strength": 125, "unit": "mg" }
-    ],
-    "dosage_form": "tablet",
-    "indication": "Treatment of respiratory, genitourinary, and skin infections caused by beta-lactamase producing organisms",
-    "regulatory_status": "CDSCO Approved"
-  },
-  {
-    "fdc_id": "FDC-ANTI-002",
-    "formulation_name": "Cefixime + Ofloxacin Tablets",
-    "category": "Anti-infectives / Dual Antibacterial",
-    "salts": [
-      { "salt": "Cefixime", "strength": 200, "unit": "mg" },
-      { "salt": "Ofloxacin", "strength": 200, "unit": "mg" }
-    ],
-    "dosage_form": "tablet",
-    "indication": "Complicated respiratory, typhoid, and urinary tract infections resistant to monotherapy",
-    "regulatory_status": "CDSCO Approved"
-  }
+  { "fdc_id": "FDC-CARD-001", "formulation_name": "Telmisartan + Amlodipine Tablets", "category": "Cardiovascular / Antihypertensive", "salts": [{"salt":"Telmisartan","strength":40,"unit":"mg"},{"salt":"Amlodipine","strength":5,"unit":"mg"}], "dosage_form": "tablet", "indication": "Essential hypertension in patients whose blood pressure is not adequately controlled on monotherapy", "regulatory_status": "CDSCO Approved" },
+  { "fdc_id": "FDC-CARD-002", "formulation_name": "Telmisartan + Chlorthalidone Tablets", "category": "Cardiovascular / Antihypertensive", "salts": [{"salt":"Telmisartan","strength":40,"unit":"mg"},{"salt":"Chlorthalidone","strength":12.5,"unit":"mg"}], "dosage_form": "tablet", "indication": "Hypertension requiring combination diuretic therapy", "regulatory_status": "CDSCO Approved" },
+  { "fdc_id": "FDC-CARD-003", "formulation_name": "Olmesartan Medoxomil + Amlodipine Tablets", "category": "Cardiovascular / Antihypertensive", "salts": [{"salt":"Olmesartan Medoxomil","strength":20,"unit":"mg"},{"salt":"Amlodipine","strength":5,"unit":"mg"}], "dosage_form": "tablet", "indication": "Hypertension not controlled by either drug alone", "regulatory_status": "CDSCO Approved" },
+  { "fdc_id": "FDC-CARD-004", "formulation_name": "Losartan + Hydrochlorothiazide Tablets", "category": "Cardiovascular / Antihypertensive", "salts": [{"salt":"Losartan Potassium","strength":50,"unit":"mg"},{"salt":"Hydrochlorothiazide","strength":12.5,"unit":"mg"}], "dosage_form": "tablet", "indication": "Hypertension where thiazide diuretic is required", "regulatory_status": "CDSCO Approved" },
+  { "fdc_id": "FDC-CARD-005", "formulation_name": "Ramipril + Amlodipine Capsules", "category": "Cardiovascular / Antihypertensive", "salts": [{"salt":"Ramipril","strength":5,"unit":"mg"},{"salt":"Amlodipine","strength":5,"unit":"mg"}], "dosage_form": "capsule", "indication": "Hypertension and cardiovascular risk reduction", "regulatory_status": "CDSCO Approved" },
+  { "fdc_id": "FDC-CARD-006", "formulation_name": "Metoprolol + Amlodipine Tablets", "category": "Cardiovascular / Antihypertensive", "salts": [{"salt":"Metoprolol Succinate","strength":50,"unit":"mg"},{"salt":"Amlodipine","strength":5,"unit":"mg"}], "dosage_form": "tablet", "indication": "Hypertension with angina", "regulatory_status": "CDSCO Approved" },
+  { "fdc_id": "FDC-CARD-007", "formulation_name": "Telmisartan + Amlodipine + Hydrochlorothiazide Tablets", "category": "Cardiovascular / Antihypertensive", "salts": [{"salt":"Telmisartan","strength":40,"unit":"mg"},{"salt":"Amlodipine","strength":5,"unit":"mg"},{"salt":"Hydrochlorothiazide","strength":12.5,"unit":"mg"}], "dosage_form": "tablet", "indication": "Resistant hypertension requiring triple combination", "regulatory_status": "CDSCO Approved" },
+  { "fdc_id": "FDC-CARD-008", "formulation_name": "Atorvastatin + Fenofibrate Tablets", "category": "Cardiovascular / Dyslipidaemia", "salts": [{"salt":"Atorvastatin","strength":10,"unit":"mg"},{"salt":"Fenofibrate","strength":145,"unit":"mg"}], "dosage_form": "tablet", "indication": "Mixed dyslipidaemia with elevated LDL and triglycerides", "regulatory_status": "CDSCO Approved" },
+  { "fdc_id": "FDC-CARD-009", "formulation_name": "Rosuvastatin + Aspirin Capsules", "category": "Cardiovascular / Dyslipidaemia", "salts": [{"salt":"Rosuvastatin","strength":10,"unit":"mg"},{"salt":"Aspirin","strength":75,"unit":"mg"}], "dosage_form": "capsule", "indication": "Prevention of cardiovascular events in high-risk patients", "regulatory_status": "CDSCO Approved" },
+  { "fdc_id": "FDC-CARD-010", "formulation_name": "Atorvastatin + Clopidogrel Capsules", "category": "Cardiovascular / Secondary Prevention", "salts": [{"salt":"Atorvastatin","strength":20,"unit":"mg"},{"salt":"Clopidogrel","strength":75,"unit":"mg"}], "dosage_form": "capsule", "indication": "Secondary prevention after MI or stroke", "regulatory_status": "CDSCO Approved" },
+  { "fdc_id": "FDC-CARD-011", "formulation_name": "Aspirin + Clopidogrel Tablets", "category": "Antiplatelet / Cardiovascular", "salts": [{"salt":"Aspirin","strength":75,"unit":"mg"},{"salt":"Clopidogrel","strength":75,"unit":"mg"}], "dosage_form": "tablet", "indication": "Dual antiplatelet therapy post-ACS or stent placement", "regulatory_status": "CDSCO Approved" },
+  { "fdc_id": "FDC-DM-001", "formulation_name": "Metformin Hydrochloride (SR) + Glimepiride Tablets", "category": "Antidiabetic", "salts": [{"salt":"Metformin","strength":500,"unit":"mg"},{"salt":"Glimepiride","strength":1,"unit":"mg"}], "dosage_form": "tablet", "indication": "Type 2 diabetes mellitus inadequately controlled on monotherapy", "regulatory_status": "CDSCO Approved" },
+  { "fdc_id": "FDC-DM-002", "formulation_name": "Metformin Hydrochloride (SR) + Glimepiride + Voglibose Tablets", "category": "Antidiabetic", "salts": [{"salt":"Metformin","strength":500,"unit":"mg"},{"salt":"Glimepiride","strength":1,"unit":"mg"},{"salt":"Voglibose","strength":0.2,"unit":"mg"}], "dosage_form": "tablet", "indication": "Type 2 diabetes with postprandial hyperglycaemia", "regulatory_status": "CDSCO Approved" },
+  { "fdc_id": "FDC-DM-003", "formulation_name": "Dapagliflozin + Metformin Hydrochloride (ER) Tablets", "category": "Antidiabetic / SGLT2 Inhibitor", "salts": [{"salt":"Dapagliflozin","strength":10,"unit":"mg"},{"salt":"Metformin","strength":1000,"unit":"mg"}], "dosage_form": "tablet", "indication": "Type 2 diabetes with cardiovascular/renal benefits", "regulatory_status": "CDSCO Approved" },
+  { "fdc_id": "FDC-DM-004", "formulation_name": "Sitagliptin + Metformin Hydrochloride Tablets", "category": "Antidiabetic / DPP-4 Inhibitor", "salts": [{"salt":"Sitagliptin","strength":50,"unit":"mg"},{"salt":"Metformin","strength":500,"unit":"mg"}], "dosage_form": "tablet", "indication": "Type 2 diabetes mellitus as add-on therapy", "regulatory_status": "CDSCO Approved" },
+  { "fdc_id": "FDC-DM-005", "formulation_name": "Vildagliptin + Metformin Tablets", "category": "Antidiabetic / DPP-4 Inhibitor", "salts": [{"salt":"Vildagliptin","strength":50,"unit":"mg"},{"salt":"Metformin","strength":500,"unit":"mg"}], "dosage_form": "tablet", "indication": "Type 2 diabetes mellitus combination therapy", "regulatory_status": "CDSCO Approved" },
+  { "fdc_id": "FDC-DM-006", "formulation_name": "Glimepiride + Pioglitazone Tablets", "category": "Antidiabetic", "salts": [{"salt":"Glimepiride","strength":2,"unit":"mg"},{"salt":"Pioglitazone","strength":15,"unit":"mg"}], "dosage_form": "tablet", "indication": "Type 2 diabetes inadequately controlled on sulfonylurea alone", "regulatory_status": "CDSCO Approved" },
+  { "fdc_id": "FDC-DM-007", "formulation_name": "Empagliflozin + Metformin Tablets", "category": "Antidiabetic / SGLT2 Inhibitor", "salts": [{"salt":"Empagliflozin","strength":10,"unit":"mg"},{"salt":"Metformin","strength":500,"unit":"mg"}], "dosage_form": "tablet", "indication": "Type 2 diabetes with cardiovascular risk reduction", "regulatory_status": "CDSCO Approved" },
+  { "fdc_id": "FDC-GI-001", "formulation_name": "Pantoprazole + Domperidone (SR) Capsules", "category": "Gastrointestinal / Acid Reflux", "salts": [{"salt":"Pantoprazole","strength":40,"unit":"mg"},{"salt":"Domperidone","strength":30,"unit":"mg"}], "dosage_form": "capsule", "indication": "GERD, gastroparesis, gastric motility disorders", "regulatory_status": "CDSCO Approved" },
+  { "fdc_id": "FDC-GI-002", "formulation_name": "Rabeprazole Sodium + Levosulpiride (SR) Capsules", "category": "Gastrointestinal / Functional Dyspepsia", "salts": [{"salt":"Rabeprazole","strength":20,"unit":"mg"},{"salt":"Levosulpiride","strength":75,"unit":"mg"}], "dosage_form": "capsule", "indication": "Functional dyspepsia, GERD with gastroparesis", "regulatory_status": "CDSCO Approved" },
+  { "fdc_id": "FDC-GI-003", "formulation_name": "Omeprazole + Domperidone Capsules", "category": "Gastrointestinal / Acid Reflux", "salts": [{"salt":"Omeprazole","strength":20,"unit":"mg"},{"salt":"Domperidone","strength":10,"unit":"mg"}], "dosage_form": "capsule", "indication": "GERD with associated nausea and delayed gastric emptying", "regulatory_status": "CDSCO Approved" },
+  { "fdc_id": "FDC-GI-004", "formulation_name": "Esomeprazole + Domperidone Capsules", "category": "Gastrointestinal / Acid Reflux", "salts": [{"salt":"Esomeprazole","strength":40,"unit":"mg"},{"salt":"Domperidone","strength":30,"unit":"mg"}], "dosage_form": "capsule", "indication": "GERD with upper GI dysmotility", "regulatory_status": "CDSCO Approved" },
+  { "fdc_id": "FDC-GI-005", "formulation_name": "Itopride + Rabeprazole Capsules", "category": "Gastrointestinal / Prokinetic", "salts": [{"salt":"Itopride","strength":150,"unit":"mg"},{"salt":"Rabeprazole","strength":20,"unit":"mg"}], "dosage_form": "capsule", "indication": "Functional dyspepsia and GERD", "regulatory_status": "CDSCO Approved" },
+  { "fdc_id": "FDC-RESP-001", "formulation_name": "Montelukast + Levocetirizine Dihydrochloride Tablets", "category": "Respiratory / Allergic Rhinitis", "salts": [{"salt":"Montelukast","strength":10,"unit":"mg"},{"salt":"Levocetirizine","strength":5,"unit":"mg"}], "dosage_form": "tablet", "indication": "Allergic rhinitis, urticaria, seasonal allergy", "regulatory_status": "CDSCO Approved" },
+  { "fdc_id": "FDC-RESP-002", "formulation_name": "Salmeterol + Fluticasone Propionate Inhalation Powder", "category": "Respiratory / Asthma & COPD", "salts": [{"salt":"Salmeterol","strength":50,"unit":"mcg"},{"salt":"Fluticasone Propionate","strength":250,"unit":"mcg"}], "dosage_form": "inhaler", "indication": "Asthma maintenance, COPD", "regulatory_status": "CDSCO Approved" },
+  { "fdc_id": "FDC-RESP-003", "formulation_name": "Formoterol + Budesonide Inhalation", "category": "Respiratory / Asthma & COPD", "salts": [{"salt":"Formoterol","strength":6,"unit":"mcg"},{"salt":"Budesonide","strength":200,"unit":"mcg"}], "dosage_form": "inhaler", "indication": "Asthma and COPD maintenance therapy", "regulatory_status": "CDSCO Approved" },
+  { "fdc_id": "FDC-RESP-004", "formulation_name": "Salbutamol + Ipratropium Bromide Inhalation", "category": "Respiratory / Bronchodilator", "salts": [{"salt":"Salbutamol","strength":100,"unit":"mcg"},{"salt":"Ipratropium Bromide","strength":20,"unit":"mcg"}], "dosage_form": "inhaler", "indication": "Acute bronchoconstriction in COPD", "regulatory_status": "CDSCO Approved" },
+  { "fdc_id": "FDC-RESP-005", "formulation_name": "Montelukast + Fexofenadine Tablets", "category": "Respiratory / Allergic Rhinitis", "salts": [{"salt":"Montelukast","strength":10,"unit":"mg"},{"salt":"Fexofenadine","strength":120,"unit":"mg"}], "dosage_form": "tablet", "indication": "Seasonal allergic rhinitis", "regulatory_status": "CDSCO Approved" },
+  { "fdc_id": "FDC-RESP-006", "formulation_name": "Ambroxol + Guaifenesin + Terbutaline Syrup", "category": "Respiratory / Mucolytic", "salts": [{"salt":"Ambroxol","strength":15,"unit":"mg"},{"salt":"Guaifenesin","strength":50,"unit":"mg"},{"salt":"Terbutaline","strength":1.25,"unit":"mg"}], "dosage_form": "syrup", "indication": "Productive cough with bronchoconstriction", "regulatory_status": "CDSCO Approved" },
+  { "fdc_id": "FDC-PAIN-001", "formulation_name": "Aceclofenac + Paracetamol Tablets", "category": "Analgesic / Anti-inflammatory", "salts": [{"salt":"Aceclofenac","strength":100,"unit":"mg"},{"salt":"Paracetamol","strength":325,"unit":"mg"}], "dosage_form": "tablet", "indication": "Acute pain, osteoarthritis, rheumatoid arthritis", "regulatory_status": "CDSCO Approved" },
+  { "fdc_id": "FDC-PAIN-002", "formulation_name": "Aceclofenac + Paracetamol + Serratiopeptidase Tablets", "category": "Analgesic / Anti-inflammatory", "salts": [{"salt":"Aceclofenac","strength":100,"unit":"mg"},{"salt":"Paracetamol","strength":325,"unit":"mg"},{"salt":"Serratiopeptidase","strength":10,"unit":"mg"}], "dosage_form": "tablet", "indication": "Post-operative pain and inflammation with oedema", "regulatory_status": "CDSCO Approved" },
+  { "fdc_id": "FDC-PAIN-003", "formulation_name": "Ibuprofen + Paracetamol Tablets", "category": "Analgesic / Antipyretic", "salts": [{"salt":"Ibuprofen","strength":400,"unit":"mg"},{"salt":"Paracetamol","strength":325,"unit":"mg"}], "dosage_form": "tablet", "indication": "Mild to moderate pain and fever", "regulatory_status": "CDSCO Approved" },
+  { "fdc_id": "FDC-PAIN-004", "formulation_name": "Diclofenac + Paracetamol Tablets", "category": "Analgesic / Anti-inflammatory", "salts": [{"salt":"Diclofenac","strength":50,"unit":"mg"},{"salt":"Paracetamol","strength":500,"unit":"mg"}], "dosage_form": "tablet", "indication": "Musculoskeletal pain, dental pain, dysmenorrhoea", "regulatory_status": "CDSCO Approved" },
+  { "fdc_id": "FDC-PAIN-005", "formulation_name": "Tramadol + Paracetamol Tablets", "category": "Analgesic / Opioid Combination", "salts": [{"salt":"Tramadol","strength":37.5,"unit":"mg"},{"salt":"Paracetamol","strength":325,"unit":"mg"}], "dosage_form": "tablet", "indication": "Moderate to severe pain", "regulatory_status": "CDSCO Approved" },
+  { "fdc_id": "FDC-PAIN-006", "formulation_name": "Aceclofenac + Thiocolchicoside Tablets", "category": "Analgesic / Muscle Relaxant", "salts": [{"salt":"Aceclofenac","strength":100,"unit":"mg"},{"salt":"Thiocolchicoside","strength":4,"unit":"mg"}], "dosage_form": "tablet", "indication": "Painful muscle spasm in musculoskeletal conditions", "regulatory_status": "CDSCO Approved" },
+  { "fdc_id": "FDC-PAIN-007", "formulation_name": "Diclofenac + Thiocolchicoside Tablets", "category": "Analgesic / Muscle Relaxant", "salts": [{"salt":"Diclofenac","strength":50,"unit":"mg"},{"salt":"Thiocolchicoside","strength":4,"unit":"mg"}], "dosage_form": "tablet", "indication": "Acute back pain with muscle spasm", "regulatory_status": "CDSCO Approved" },
+  { "fdc_id": "FDC-PAIN-008", "formulation_name": "Etoricoxib + Thiocolchicoside Tablets", "category": "Analgesic / Muscle Relaxant", "salts": [{"salt":"Etoricoxib","strength":60,"unit":"mg"},{"salt":"Thiocolchicoside","strength":4,"unit":"mg"}], "dosage_form": "tablet", "indication": "Acute musculoskeletal pain with spasm", "regulatory_status": "CDSCO Approved" },
+  { "fdc_id": "FDC-ABIO-001", "formulation_name": "Amoxycillin + Potassium Clavulanate Tablets", "category": "Antibiotic / Beta-Lactam Combination", "salts": [{"salt":"Amoxycillin","strength":500,"unit":"mg"},{"salt":"Clavulanic Acid","strength":125,"unit":"mg"}], "dosage_form": "tablet", "indication": "Broad-spectrum infections including beta-lactamase resistant strains", "regulatory_status": "CDSCO Approved" },
+  { "fdc_id": "FDC-ABIO-002", "formulation_name": "Cefixime + Ofloxacin Tablets", "category": "Antibiotic / Combination", "salts": [{"salt":"Cefixime","strength":200,"unit":"mg"},{"salt":"Ofloxacin","strength":200,"unit":"mg"}], "dosage_form": "tablet", "indication": "Enteric fever, complicated UTI, respiratory infections", "regulatory_status": "CDSCO Approved" },
+  { "fdc_id": "FDC-ABIO-003", "formulation_name": "Cefixime + Ornidazole Tablets", "category": "Antibiotic / Combination", "salts": [{"salt":"Cefixime","strength":200,"unit":"mg"},{"salt":"Ornidazole","strength":500,"unit":"mg"}], "dosage_form": "tablet", "indication": "Mixed bacterial and protozoal infections", "regulatory_status": "CDSCO Approved" },
+  { "fdc_id": "FDC-ABIO-004", "formulation_name": "Amoxicillin + Cloxacillin Capsules", "category": "Antibiotic / Combination", "salts": [{"salt":"Amoxicillin","strength":250,"unit":"mg"},{"salt":"Cloxacillin","strength":250,"unit":"mg"}], "dosage_form": "capsule", "indication": "Skin and soft tissue infections, mixed gram-positive infections", "regulatory_status": "CDSCO Approved" },
+  { "fdc_id": "FDC-ABIO-005", "formulation_name": "Ofloxacin + Ornidazole Tablets", "category": "Antibiotic / Combination", "salts": [{"salt":"Ofloxacin","strength":200,"unit":"mg"},{"salt":"Ornidazole","strength":500,"unit":"mg"}], "dosage_form": "tablet", "indication": "GI infections, gynaecological infections, H.pylori", "regulatory_status": "CDSCO Approved" },
+  { "fdc_id": "FDC-ABIO-006", "formulation_name": "Ciprofloxacin + Tinidazole Tablets", "category": "Antibiotic / Combination", "salts": [{"salt":"Ciprofloxacin","strength":500,"unit":"mg"},{"salt":"Tinidazole","strength":600,"unit":"mg"}], "dosage_form": "tablet", "indication": "GI infections with anaerobic component", "regulatory_status": "CDSCO Approved" },
+  { "fdc_id": "FDC-NEUR-001", "formulation_name": "Pregabalin + Methylcobalamin Capsules", "category": "Neurological / Neuropathic Pain", "salts": [{"salt":"Pregabalin","strength":75,"unit":"mg"},{"salt":"Methylcobalamin","strength":0.75,"unit":"mg"}], "dosage_form": "capsule", "indication": "Diabetic neuropathy, postherpetic neuralgia", "regulatory_status": "CDSCO Approved" },
+  { "fdc_id": "FDC-NEUR-002", "formulation_name": "Gabapentin + Methylcobalamin Tablets", "category": "Neurological / Neuropathic Pain", "salts": [{"salt":"Gabapentin","strength":300,"unit":"mg"},{"salt":"Methylcobalamin","strength":0.5,"unit":"mg"}], "dosage_form": "tablet", "indication": "Peripheral neuropathy, nerve pain", "regulatory_status": "CDSCO Approved" },
+  { "fdc_id": "FDC-NEUR-003", "formulation_name": "Amitriptyline + Chlordiazepoxide Tablets", "category": "Neurological / Antidepressant Combination", "salts": [{"salt":"Amitriptyline","strength":12.5,"unit":"mg"},{"salt":"Chlordiazepoxide","strength":5,"unit":"mg"}], "dosage_form": "tablet", "indication": "Depression with anxiety", "regulatory_status": "CDSCO Approved" },
+  { "fdc_id": "FDC-VIT-001", "formulation_name": "Ferrous Ascorbate + Folic Acid Tablets", "category": "Haematinics / Iron Supplement", "salts": [{"salt":"Ferrous Ascorbate","strength":100,"unit":"mg"},{"salt":"Folic Acid","strength":1.5,"unit":"mg"}], "dosage_form": "tablet", "indication": "Iron deficiency anaemia, pregnancy anaemia", "regulatory_status": "CDSCO Approved" },
+  { "fdc_id": "FDC-VIT-002", "formulation_name": "Ferrous Sulphate + Folic Acid + Zinc Tablets", "category": "Haematinics / Micronutrient", "salts": [{"salt":"Ferrous Sulphate","strength":200,"unit":"mg"},{"salt":"Folic Acid","strength":0.5,"unit":"mg"},{"salt":"Zinc Sulphate","strength":22.5,"unit":"mg"}], "dosage_form": "tablet", "indication": "Anaemia with zinc deficiency in pregnancy", "regulatory_status": "CDSCO Approved" },
+  { "fdc_id": "FDC-VIT-003", "formulation_name": "Vitamin B Complex + Vitamin C Tablets", "category": "Vitamins / Multivitamin", "salts": [{"salt":"Thiamine","strength":10,"unit":"mg"},{"salt":"Riboflavin","strength":10,"unit":"mg"},{"salt":"Niacin","strength":45,"unit":"mg"},{"salt":"Pyridoxine","strength":3,"unit":"mg"},{"salt":"Cyanocobalamin","strength":0.015,"unit":"mg"},{"salt":"Ascorbic Acid","strength":150,"unit":"mg"}], "dosage_form": "tablet", "indication": "Vitamin B and C deficiency states", "regulatory_status": "CDSCO Approved" },
+  { "fdc_id": "FDC-VIT-004", "formulation_name": "Calcium Carbonate + Vitamin D3 Tablets", "category": "Minerals / Bone Health", "salts": [{"salt":"Calcium Carbonate","strength":500,"unit":"mg"},{"salt":"Cholecalciferol","strength":0.00625,"unit":"mg"}], "dosage_form": "tablet", "indication": "Osteoporosis, vitamin D and calcium deficiency", "regulatory_status": "CDSCO Approved" },
+  { "fdc_id": "FDC-VIT-005", "formulation_name": "Methylcobalamin + Alpha Lipoic Acid + Pyridoxine Capsules", "category": "Neurological / Neuroprotective", "salts": [{"salt":"Methylcobalamin","strength":1.5,"unit":"mg"},{"salt":"Alpha Lipoic Acid","strength":100,"unit":"mg"},{"salt":"Pyridoxine","strength":3,"unit":"mg"}], "dosage_form": "capsule", "indication": "Peripheral neuropathy, nutritional neuropathy", "regulatory_status": "CDSCO Approved" },
+  { "fdc_id": "FDC-OB-001", "formulation_name": "Ormeloxifene (SR) + Norethindrone Tablets", "category": "Gynaecology / Contraception", "salts": [{"salt":"Ormeloxifene","strength":60,"unit":"mg"},{"salt":"Norethindrone","strength":0.35,"unit":"mg"}], "dosage_form": "tablet", "indication": "Emergency contraception, dysfunctional uterine bleeding", "regulatory_status": "CDSCO Approved" },
+  { "fdc_id": "FDC-OPH-001", "formulation_name": "Ofloxacin + Dexamethasone Eye/Ear Drops", "category": "Ophthalmic / Otic", "salts": [{"salt":"Ofloxacin","strength":0.3,"unit":"%"},{"salt":"Dexamethasone","strength":0.1,"unit":"%"}], "dosage_form": "drops", "indication": "Bacterial eye/ear infections with inflammation", "regulatory_status": "CDSCO Approved" },
+  { "fdc_id": "FDC-OPH-002", "formulation_name": "Tobramycin + Dexamethasone Eye Drops", "category": "Ophthalmic", "salts": [{"salt":"Tobramycin","strength":0.3,"unit":"%"},{"salt":"Dexamethasone","strength":0.1,"unit":"%"}], "dosage_form": "drops", "indication": "Bacterial keratoconjunctivitis with inflammation", "regulatory_status": "CDSCO Approved" },
+  { "fdc_id": "FDC-DERM-001", "formulation_name": "Clotrimazole + Beclomethasone + Neomycin Cream", "category": "Dermatology / Topical Combination", "salts": [{"salt":"Clotrimazole","strength":1,"unit":"%"},{"salt":"Beclomethasone","strength":0.025,"unit":"%"},{"salt":"Neomycin","strength":0.5,"unit":"%"}], "dosage_form": "ointment", "indication": "Mixed fungal + bacterial skin infections with inflammation", "regulatory_status": "CDSCO Approved" },
+  { "fdc_id": "FDC-DERM-002", "formulation_name": "Mupirocin + Liquid Paraffin Ointment", "category": "Dermatology / Antibiotic Topical", "salts": [{"salt":"Mupirocin","strength":2,"unit":"%"}], "dosage_form": "ointment", "indication": "Impetigo, secondarily infected dermatoses", "regulatory_status": "CDSCO Approved" },
+  { "fdc_id": "FDC-ANTI-001", "formulation_name": "Artesunate + Lumefantrine Tablets", "category": "Antimalarial / Combination", "salts": [{"salt":"Artesunate","strength":25,"unit":"mg"},{"salt":"Lumefantrine","strength":120,"unit":"mg"}], "dosage_form": "tablet", "indication": "Uncomplicated falciparum malaria", "regulatory_status": "CDSCO Approved" },
+  { "fdc_id": "FDC-ANTI-002", "formulation_name": "Chloroquine + Primaquine Tablets", "category": "Antimalarial", "salts": [{"salt":"Chloroquine Phosphate","strength":250,"unit":"mg"},{"salt":"Primaquine Phosphate","strength":7.5,"unit":"mg"}], "dosage_form": "tablet", "indication": "Vivax malaria radical cure and prevention of relapse", "regulatory_status": "CDSCO Approved" },
+  { "fdc_id": "FDC-TB-001", "formulation_name": "Rifampicin + Isoniazid + Pyrazinamide + Ethambutol Tablets (4FDC)", "category": "Antituberculosis / 4-Drug FDC", "salts": [{"salt":"Rifampicin","strength":150,"unit":"mg"},{"salt":"Isoniazid","strength":75,"unit":"mg"},{"salt":"Pyrazinamide","strength":400,"unit":"mg"},{"salt":"Ethambutol","strength":275,"unit":"mg"}], "dosage_form": "tablet", "indication": "Intensive phase of tuberculosis treatment", "regulatory_status": "CDSCO Approved" },
+  { "fdc_id": "FDC-TB-002", "formulation_name": "Rifampicin + Isoniazid Tablets (2FDC)", "category": "Antituberculosis / 2-Drug FDC", "salts": [{"salt":"Rifampicin","strength":450,"unit":"mg"},{"salt":"Isoniazid","strength":300,"unit":"mg"}], "dosage_form": "tablet", "indication": "Continuation phase of tuberculosis treatment", "regulatory_status": "CDSCO Approved" },
+  { "fdc_id": "FDC-HIV-001", "formulation_name": "Tenofovir + Lamivudine + Efavirenz Tablets (TLE)", "category": "Antiretroviral / HIV", "salts": [{"salt":"Tenofovir Disoproxil Fumarate","strength":300,"unit":"mg"},{"salt":"Lamivudine","strength":300,"unit":"mg"},{"salt":"Efavirenz","strength":600,"unit":"mg"}], "dosage_form": "tablet", "indication": "HIV-1 infection, first-line ART regimen", "regulatory_status": "CDSCO Approved" },
+  { "fdc_id": "FDC-HIV-002", "formulation_name": "Tenofovir + Lamivudine + Dolutegravir Tablets (TLD)", "category": "Antiretroviral / HIV", "salts": [{"salt":"Tenofovir Disoproxil Fumarate","strength":300,"unit":"mg"},{"salt":"Lamivudine","strength":300,"unit":"mg"},{"salt":"Dolutegravir","strength":50,"unit":"mg"}], "dosage_form": "tablet", "indication": "HIV-1 infection, preferred first-line ART", "regulatory_status": "CDSCO Approved" },
+  { "fdc_id": "FDC-URO-001", "formulation_name": "Tamsulosin + Dutasteride Capsules", "category": "Urology / BPH", "salts": [{"salt":"Tamsulosin","strength":0.4,"unit":"mg"},{"salt":"Dutasteride","strength":0.5,"unit":"mg"}], "dosage_form": "capsule", "indication": "Benign prostatic hyperplasia (BPH)", "regulatory_status": "CDSCO Approved" },
+  { "fdc_id": "FDC-URO-002", "formulation_name": "Sildenafil + Dapoxetine Tablets", "category": "Urology / Sexual Health", "salts": [{"salt":"Sildenafil","strength":50,"unit":"mg"},{"salt":"Dapoxetine","strength":30,"unit":"mg"}], "dosage_form": "tablet", "indication": "Erectile dysfunction with premature ejaculation", "regulatory_status": "CDSCO Approved" }
 ]

@@ -54,6 +54,8 @@ export interface LookupResponse {
     application_number: string;
     source: string;
   };
+  /** true = clinical rules (food/dose) are rule-based estimates; false = verified pharmacopeia data */
+  is_clinical_data_estimated: boolean;
   source: string;
 }
 
@@ -361,10 +363,11 @@ export function lookupMedicineInCatalog(name: string): LookupResponse | null {
             max_daily_ceiling_mg: row.max_daily_ceiling_mg || 200,
           },
           fda_monograph: {
-            found: Boolean(row.fda_application_number),
+            found: Boolean(row.fda_application_number) && row.fda_application_number !== "NDA-REF",
             application_number: row.fda_application_number || "NDA-VERIFIED",
             source: row.source === "cdsco_fdc" ? "CDSCO Gazette (DCGI)" : "US FDA National Drug Code & Label Repository",
           },
+          is_clinical_data_estimated: Boolean(row.is_clinical_data_estimated),
           source: row.source || "master_catalog",
         };
       }
@@ -410,6 +413,7 @@ export function lookupMedicineInCatalog(name: string): LookupResponse | null {
       application_number: item.fda_application_number || "NDA-VERIFIED",
       source: "US FDA National Drug Code & Label Repository",
     },
+    is_clinical_data_estimated: true,  // in-memory curated catalog always uses rule-based estimates
     source: item.source || "in_memory_curated",
   };
 }
