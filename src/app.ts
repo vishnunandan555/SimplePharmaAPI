@@ -10,6 +10,7 @@ import { searchRouter } from "./routes/search.js";
 import { lookupRouter } from "./routes/lookup.js";
 import { safetyRouter } from "./routes/safety.js";
 import { compositionRouter, bySaltRouter } from "./routes/composition.js";
+import { overdoseRouter } from "./routes/overdose.js";
 
 export const app = express();
 
@@ -31,7 +32,9 @@ app.get("/", (_req: Request, res: Response) => {
       lookup: "GET /api/medicines/lookup?name={medicine_name}",
       composition: "GET /api/medicines/composition?name={medicine_name}",
       by_salt: "GET /api/medicines/by-salt?salt={chemical_name}&limit={n}",
-      safety: "GET /api/safety/medicine-analysis?drug={drug_name}&active_meds={med1,med2}&conditions={cond1,cond2}",
+      safety_analysis: "GET /api/safety/medicine-analysis?drug={drug}&active_meds={med1,med2}&conditions={cond1,cond2}",
+      overdose_check: "POST /api/safety/overdose-check  body: { medicines: [\"Med1\", \"Med2\"] }",
+      overdose_check_get: "GET /api/safety/overdose-check?medicines=Med1,Med2,Med3",
     },
     sample_queries: [
       "/api/medicines/search?q=mastifen",
@@ -42,6 +45,7 @@ app.get("/", (_req: Request, res: Response) => {
       "/api/medicines/by-salt?salt=Metformin&limit=30",
       "/api/medicines/lookup?name=Telma%2040",
       "/api/safety/medicine-analysis?drug=Aspirin&conditions=Asthma",
+      "/api/safety/overdose-check?medicines=Dolo650,Calpol500,Combiflam",
     ],
   });
 });
@@ -53,6 +57,7 @@ app.use("/api/medicines/lookup", lookupRouter);
 app.use("/api/medicines/composition", compositionRouter);
 app.use("/api/medicines/by-salt", bySaltRouter);
 app.use("/api/safety", safetyRouter);
+app.use("/api/safety/overdose-check", overdoseRouter);
 
 // 404 handler
 app.use((req: Request, res: Response) => {

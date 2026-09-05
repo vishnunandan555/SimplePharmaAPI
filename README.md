@@ -1,13 +1,15 @@
 # SimplePharmaAPI 💊🇮🇳
 
-> **100% Free, Standalone Indian Medicine Search, Clinical Specifications, and Safety Engine.**  
+> **100% Free, Standalone Indian Medicine Search, Clinical Specifications, Safety & Overdose Checker.**  
 > Pre-bundled with **256,470+ Indian medicines & SKUs**. Zero external database accounts required.
+
+**Live API:** https://simple-pharma-api.onrender.com
 
 ---
 
 ## ⚡ Multi-Database Architecture
 
-SimplePharmaAPI acts as an intelligent federated search engine querying across **5 pre-downloaded, complementary pharmaceutical datasets** simultaneously in under 5ms:
+SimplePharmaAPI is an intelligent federated search engine querying across **5 pre-downloaded, complementary pharmaceutical datasets** simultaneously in under 5ms:
 
 | # | Dataset | Records | Description | Source Tag |
 | :--- | :--- | :--- | :--- | :--- |
@@ -19,23 +21,38 @@ SimplePharmaAPI acts as an intelligent federated search engine querying across *
 
 ---
 
-## 💡 How to Use: Core Workflows & Examples
+## 📋 Complete API Reference
+
+### All Endpoints
+
+| Method | Endpoint | Description |
+| :--- | :--- | :--- |
+| `GET` | `/api/health` | Service status, uptime, indexed count |
+| `GET` | `/api/medicines/search` | Fuzzy autocomplete search |
+| `GET` | `/api/medicines/lookup` | Full clinical spec for one medicine |
+| `GET` | `/api/medicines/composition` | Chemical composition / active ingredients |
+| `GET` | `/api/medicines/by-salt` | Find all brands containing a given salt |
+| `GET` | `/api/safety/medicine-analysis` | DDI + contraindication safety check |
+| `GET` `POST` | `/api/safety/overdose-check` | **Combined dose overdose risk checker** |
+
+---
+
+## 💡 Workflow Examples
 
 ### Workflow 1: Search-As-You-Type Autocomplete
-When a user types into a medicine search bar, call `/api/medicines/search`. The engine performs multi-tier fuzzy matching across brands, generics, and common typos in **sub-5ms**:
 
 ```http
 GET /api/medicines/search?q=mastifen&limit=5
 ```
 
-#### Query Parameters:
+**Query Parameters:**
 | Parameter | Type | Required | Default | Description |
 | :--- | :---: | :---: | :---: | :--- |
-| `q` | `string` | **Yes** | `""` | Search query (brand name, generic name, salt, or strength e.g. `dolo 650`, `pantop`, `metformin`) |
-| `limit` | `number` | No | `10` | Maximum number of results to return (capped at 50) |
-| `source` | `string` | No | *all* | Filter by dataset: `1mg_commercial`, `pmbjp_jan_aushadhi`, or `cdsco_fdc` |
+| `q` | `string` | **Yes** | `""` | Search query — brand name, generic, salt, or strength (e.g. `dolo 650`) |
+| `limit` | `number` | No | `10` | Max results (capped at 50) |
+| `source` | `string` | No | *all* | Filter: `1mg_commercial`, `pmbjp_jan_aushadhi`, or `cdsco_fdc` |
 
-#### Response:
+**Response:**
 ```json
 {
   "query": "mastifen",
@@ -58,23 +75,13 @@ GET /api/medicines/search?q=mastifen&limit=5
 
 ---
 
-### Workflow 2: Instant Form Auto-Fill (Clinical Specs)
-When a user selects a medicine from search results or types a full name, call `/api/medicines/lookup` to auto-populate all clinical, scheduling, and safety fields in **under 2ms**:
+### Workflow 2: Clinical Spec Auto-Fill (Lookup)
 
 ```http
 GET /api/medicines/lookup?name=Mastifen%201mg
 ```
 
-#### Fields Returned for Auto-Fill:
-- **Brand & Generic Names**: Standardized nomenclature.
-- **Active Ingredients**: Array with parsed salts, strengths, and units.
-- **Dosage Form**: `tablet`, `capsule`, `syrup`, `inhaler`, etc.
-- **Food Relation**: `empty_stomach`, `after`, `with_meals`, or `with_or_without_food`.
-- **Food Badge & Instructions**: User-facing badge text (e.g. `🌙 With Food / At Bedtime`) and detailed patient instructions.
-- **Dose Schedule & Ceilings**: Standard schedule, elderly safe daily bound (`senior_safe_ceiling_mg`), and maximum daily limit (`max_daily_ceiling_mg`).
-- **FDA / CDSCO Monograph**: Regulatory approval code and source repository.
-
-#### Response:
+**Response:**
 ```json
 {
   "input": "Mastifen 1mg",
@@ -107,95 +114,187 @@ GET /api/medicines/lookup?name=Mastifen%201mg
 
 ---
 
-### Workflow 3: Finding Affordable Jan Aushadhi Generic Alternatives
-To help patients save up to 80% on prescription costs, pass `source=pmbjp_jan_aushadhi` to search specifically across official government generics:
+### Workflow 3: Chemical Composition Finder
+
+Get the active ingredient breakdown of any medicine:
+
+```http
+GET /api/medicines/composition?name=Combiflam
+```
+
+**Response:**
+```json
+{
+  "input": "Combiflam",
+  "brand_name": "Combiflam Tablet",
+  "generic_name": "Ibuprofen + Paracetamol",
+  "dosage_form": "tablet",
+  "composition_summary": "Ibuprofen 400mg + Paracetamol 325mg",
+  "active_ingredients": [
+    { "salt": "Ibuprofen", "strength": 400, "unit": "mg" },
+    { "salt": "Paracetamol", "strength": 325, "unit": "mg" }
+  ],
+  "is_fixed_dose_combination": true,
+  "source": "1mg_commercial"
+}
+```
+
+---
+
+### Workflow 4: Find All Brands by Salt (Reverse Lookup)
+
+Find every brand containing a specific active chemical:
+
+```http
+GET /api/medicines/by-salt?salt=Metformin&limit=20
+```
+
+**Query Parameters:**
+| Parameter | Type | Required | Default | Description |
+| :--- | :---: | :---: | :---: | :--- |
+| `salt` | `string` | **Yes** | — | Active ingredient / chemical name (e.g. `Ketotifen`, `Metformin`) |
+| `limit` | `number` | No | `20` | Max results (capped at 100) |
+| `source` | `string` | No | *all* | Filter by dataset |
+
+**Response:**
+```json
+{
+  "salt_query": "Metformin",
+  "total": 20,
+  "results": [
+    {
+      "brand_name": "Bimet Tablet",
+      "generic_name": "Metformin",
+      "strength": "500 mg",
+      "dosage_form": "tablet",
+      "manufacturer": "Aretaeus Pharmaceuticals",
+      "price_inr": 18.7,
+      "source": "1mg_commercial"
+    }
+  ]
+}
+```
+
+---
+
+### Workflow 5: Polypharmacy Overdose Safety Check ⚠️
+
+> **The most powerful feature.** Check if taking multiple medicines together would result in a dangerous combined dose of any active ingredient.
+
+**Scenario:** A patient is prescribed *Dolo 650*, *Calpol 500*, and *Combiflam* — but they all contain Paracetamol. Is this safe?
+
+#### GET (Quick check via query param)
+```http
+GET /api/safety/overdose-check?medicines=Dolo650,Calpol500,Combiflam
+```
+
+#### POST (Recommended — handles names with spaces and special characters)
+```http
+POST /api/safety/overdose-check
+Content-Type: application/json
+
+{
+  "medicines": ["Dolo 650", "Calpol 500", "Combiflam"]
+}
+```
+
+**Response:**
+```json
+{
+  "medicines_checked": ["Dolo 650", "Calpol 500", "Combiflam"],
+  "medicines_resolved": 3,
+  "unresolved_medicines": [],
+  "salt_aggregation": [
+    {
+      "salt": "Paracetamol",
+      "contributed_by": ["Dolo 650 Tablet", "Calpol 500mg Tablet", "Combiflam Tablet"],
+      "is_duplicate_across_medicines": true,
+      "total_combined_mg": 1475,
+      "max_safe_single_dose_mg": 1000,
+      "max_safe_daily_dose_mg": 4000,
+      "senior_daily_max_mg": 2000,
+      "ceiling_source": "hardcoded_reference",
+      "risk_level": "WARNING",
+      "message": "⚠️ WARNING: Combined Paracetamol dose is 1475.0 mg — exceeds safe single-dose limit of 1000 mg. Avoid taking all these medicines at the same time.",
+      "clinical_notes": "Hepatotoxic in overdose. Max 2g/day in hepatic impairment or chronic alcohol use."
+    },
+    {
+      "salt": "Ibuprofen",
+      "contributed_by": ["Combiflam Tablet"],
+      "is_duplicate_across_medicines": false,
+      "total_combined_mg": 400,
+      "max_safe_single_dose_mg": 800,
+      "max_safe_daily_dose_mg": 3200,
+      "senior_daily_max_mg": 1200,
+      "ceiling_source": "hardcoded_reference",
+      "risk_level": "SAFE",
+      "message": "✅ SAFE: Combined Ibuprofen dose is 400.0 mg — within safe single-dose limit of 800 mg."
+    }
+  ],
+  "overall_risk": "WARNING",
+  "risk_flags": ["OVERDOSE_RISK_PARACETAMOL", "DUPLICATE_SALT_PARACETAMOL", "HAS_DUPLICATE_SALTS"],
+  "unique_salts_found": 2,
+  "has_duplicate_salts": true,
+  "disclaimer": "⚠️ MEDICAL DISCLAIMER: This tool provides informational dose-stacking analysis only. It is NOT a substitute for professional medical advice, diagnosis, or treatment. Always consult a licensed physician or pharmacist before combining medications."
+}
+```
+
+**Risk Levels:**
+
+| Level | Icon | Meaning |
+| :--- | :---: | :--- |
+| `SAFE` | ✅ | Combined dose is within safe limits |
+| `CAUTION` | 🟡 | Approaching limit, or same salt in multiple medicines |
+| `WARNING` | ⚠️ | Combined dose exceeds single-dose safe limit |
+| `DANGER` | ⛔ | Combined dose is >150% of safe limit — do NOT take simultaneously |
+| `UNKNOWN` | ❔ | Salt not in reference database — consult pharmacist |
+
+**Ceiling Data Sources (3-tier):**
+1. **Hardcoded Reference** (~110 salts, WHO/FDA/BNF verified, instant) — covers 95%+ of Indian market
+2. **medicines.db Query** (MAX daily ceiling from 256k records) — fills rare gaps
+3. **`UNKNOWN`** — returned for truly exotic/investigational compounds
+
+**Limits:** 2–10 medicines per request. Use POST for names with spaces.
+
+---
+
+### Workflow 6: Jan Aushadhi Generic Alternatives
+
+Save up to 80% by finding government generic equivalents:
 
 ```http
 GET /api/medicines/search?q=Aceclofenac&source=pmbjp_jan_aushadhi
 ```
 
-#### Response:
-```json
-{
-  "query": "Aceclofenac",
-  "total": 3,
-  "results": [
-    {
-      "id": "pmbjp-253974",
-      "brand_name": "Jan Aushadhi Aceclofenac 100mg and Paracetamol 325mg Tablets",
-      "generic_name": "Aceclofenac 100mg and Paracetamol 325mg Tablets",
-      "strength": "1 unit",
-      "dosage_form": "tablet",
-      "manufacturer": "PMBJP (Pradhan Mantri Bhartiya Janaushadhi Pariyojana)",
-      "therapeutic_class": "Analgesic/Antipyretic/Anti-Inflammatory",
-      "price_inr": 10,
-      "source": "pmbjp_jan_aushadhi"
-    }
-  ]
-}
-```
-*(Notice the price is **₹ 10** compared to commercial brand alternatives which sell for ₹ 90 - ₹ 110!)*
-
 ---
 
-### Workflow 4: Patient Safety, DDI & Contraindication Analysis
-Before prescribing or confirming an elder's medication, call `/api/safety/medicine-analysis` to detect drug interactions against active medications and chronic disease contraindications:
+### Workflow 7: Patient Safety, DDI & Contraindication Analysis
 
 ```http
 GET /api/safety/medicine-analysis?drug=Aspirin&conditions=Asthma&active_meds=Ibuprofen
 ```
 
-#### Query Parameters:
+**Query Parameters:**
 | Parameter | Type | Required | Description |
 | :--- | :---: | :---: | :--- |
-| `drug` | `string` | **Yes** | Medicine name to evaluate (e.g. `Aspirin`, `Telmisartan`) |
-| `active_meds` | `string` | No | Comma-separated list of medicines patient is already taking (e.g. `Ibuprofen,Metformin`) |
-| `conditions` | `string` | No | Comma-separated list of chronic conditions (e.g. `Asthma,Peptic Ulcer`) |
-
-#### Response:
-```json
-{
-  "input_name": "Aspirin",
-  "normalized_generic": "aspirin",
-  "fda_label_found": true,
-  "interactions_with_active_regimen": [
-    {
-      "drug_a": "Aspirin",
-      "drug_b": "Ibuprofen",
-      "severity": "critical",
-      "clinical_effect": "Synergistic gastrointestinal ulceration, severe mucosal bleeding, and additive renal impairment.",
-      "recommendation": "Avoid concurrent use of multiple NSAIDs. Use paracetamol for analgesia where appropriate."
-    }
-  ],
-  "food_and_timing": {
-    "timing_rule": "with_or_without_food",
-    "badge_label": "💊 With or Without Food",
-    "instruction": "May be administered with or without food. Maintain a consistent daily routine."
-  },
-  "condition_contraindications": [
-    {
-      "condition": "Asthma",
-      "severity": "critical",
-      "explanation": "Contraindicated: NSAIDs trigger acute bronchospasm and severe respiratory crises in patients with reactive airway disease (AERD).",
-      "fda_quote": "Aspirin-sensitive asthma: serious and potentially fatal bronchospasm reported in patients with asthma."
-    }
-  ]
-}
-```
+| `drug` | `string` | **Yes** | Medicine to evaluate (e.g. `Aspirin`) |
+| `active_meds` | `string` | No | Comma-separated current medications (e.g. `Ibuprofen,Metformin`) |
+| `conditions` | `string` | No | Comma-separated conditions (e.g. `Asthma,Peptic Ulcer`) |
 
 ---
 
 ## 📱 Code Integration Cheatsheets
 
 ### 1. Flutter / Dart
+
 ```dart
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 
 class PharmaService {
-  static const String baseUrl = 'https://<your-render-service>.onrender.com';
+  static const String baseUrl = 'https://simple-pharma-api.onrender.com';
 
-  // 1. Search medicines
+  // Search medicines
   static Future<List<Map<String, dynamic>>> search(String query) async {
     final url = Uri.parse('$baseUrl/api/medicines/search?q=${Uri.encodeComponent(query)}&limit=8');
     final res = await http.get(url);
@@ -206,27 +305,80 @@ class PharmaService {
     return [];
   }
 
-  // 2. Auto-fill clinical specs
+  // Get chemical composition
+  static Future<Map<String, dynamic>?> composition(String medicineName) async {
+    final url = Uri.parse('$baseUrl/api/medicines/composition?name=${Uri.encodeComponent(medicineName)}');
+    final res = await http.get(url);
+    if (res.statusCode == 200) return jsonDecode(res.body);
+    return null;
+  }
+
+  // Check overdose risk for multiple medicines
+  static Future<Map<String, dynamic>?> overdoseCheck(List<String> medicines) async {
+    final url = Uri.parse('$baseUrl/api/safety/overdose-check');
+    final res = await http.post(
+      url,
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode({'medicines': medicines}),
+    );
+    if (res.statusCode == 200) return jsonDecode(res.body);
+    return null;
+  }
+
+  // Full clinical spec
   static Future<Map<String, dynamic>?> lookup(String medicineName) async {
     final url = Uri.parse('$baseUrl/api/medicines/lookup?name=${Uri.encodeComponent(medicineName)}');
     final res = await http.get(url);
-    if (res.statusCode == 200) {
-      return jsonDecode(res.body);
-    }
+    if (res.statusCode == 200) return jsonDecode(res.body);
     return null;
+  }
+
+  // Find all brands by salt
+  static Future<List<Map<String, dynamic>>> bySalt(String salt, {int limit = 20}) async {
+    final url = Uri.parse('$baseUrl/api/medicines/by-salt?salt=${Uri.encodeComponent(salt)}&limit=$limit');
+    final res = await http.get(url);
+    if (res.statusCode == 200) {
+      final data = jsonDecode(res.body);
+      return List<Map<String, dynamic>>.from(data['results']);
+    }
+    return [];
   }
 }
 ```
 
 ### 2. JavaScript / React / Next.js
-```javascript
-const BASE_URL = "https://<your-render-service>.onrender.com";
 
-// Search Autocomplete Hook
-export async function searchMedicines(query) {
-  const res = await fetch(`${BASE_URL}/api/medicines/search?q=${encodeURIComponent(query)}&limit=6`);
+```javascript
+const BASE_URL = "https://simple-pharma-api.onrender.com";
+
+// Search Autocomplete
+export async function searchMedicines(query, limit = 6) {
+  const res = await fetch(`${BASE_URL}/api/medicines/search?q=${encodeURIComponent(query)}&limit=${limit}`);
   const data = await res.json();
   return data.results || [];
+}
+
+// Chemical Composition
+export async function getComposition(name) {
+  const res = await fetch(`${BASE_URL}/api/medicines/composition?name=${encodeURIComponent(name)}`);
+  return await res.json();
+}
+
+// Find All Brands by Salt
+export async function findBySalt(salt, limit = 20) {
+  const res = await fetch(`${BASE_URL}/api/medicines/by-salt?salt=${encodeURIComponent(salt)}&limit=${limit}`);
+  const data = await res.json();
+  return data.results || [];
+}
+
+// Overdose Risk Check (POST — handles spaces in medicine names)
+export async function checkOverdose(medicines) {
+  const res = await fetch(`${BASE_URL}/api/safety/overdose-check`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ medicines }),
+  });
+  return await res.json();
 }
 
 // Full Clinical Spec Lookup
@@ -237,118 +389,132 @@ export async function lookupMedicine(name) {
 ```
 
 ### 3. Python
+
 ```python
 import requests
 
-BASE_URL = "https://<your-render-service>.onrender.com"
+BASE_URL = "https://simple-pharma-api.onrender.com"
 
 # Search
-res = requests.get(f"{BASE_URL}/api/medicines/search", params={"q": "dolo 650"})
-print("Top Result:", res.json()["results"][0])
+results = requests.get(f"{BASE_URL}/api/medicines/search", params={"q": "dolo 650"}).json()
+print("Top Result:", results["results"][0]["brand_name"])
 
-# Lookup
-specs = requests.get(f"{BASE_URL}/api/medicines/lookup", params={"name": "Mastifen 1mg"}).json()
-print("Food Rule:", specs["food_badge"])
+# Chemical Composition
+comp = requests.get(f"{BASE_URL}/api/medicines/composition", params={"name": "Combiflam"}).json()
+print("Composition:", comp["composition_summary"])
+
+# Find all brands by salt
+brands = requests.get(f"{BASE_URL}/api/medicines/by-salt", params={"salt": "Metformin", "limit": 10}).json()
+print(f"Found {brands['total']} Metformin brands")
+
+# Overdose check (POST)
+risk = requests.post(
+    f"{BASE_URL}/api/safety/overdose-check",
+    json={"medicines": ["Dolo 650", "Calpol 500", "Combiflam"]}
+).json()
+print("Overall Risk:", risk["overall_risk"])
+for salt in risk["salt_aggregation"]:
+    print(f"  {salt['salt']}: {salt['total_combined_mg']}mg → {salt['risk_level']}")
 ```
 
 ### 4. cURL
+
 ```bash
+BASE="https://simple-pharma-api.onrender.com"
+
 # 1. Health check
-curl "https://<your-service>.onrender.com/api/health"
+curl "$BASE/api/health"
 
-# 2. Search commercial brands
-curl "https://<your-service>.onrender.com/api/medicines/search?q=telma%2040"
+# 2. Search
+curl "$BASE/api/medicines/search?q=mastifen"
 
-# 3. Search Jan Aushadhi generic catalog
-curl "https://<your-service>.onrender.com/api/medicines/search?q=metformin&source=pmbjp_jan_aushadhi"
+# 3. Chemical composition
+curl "$BASE/api/medicines/composition?name=Combiflam"
 
-# 4. Clinical Spec Lookup
-curl "https://<your-service>.onrender.com/api/medicines/lookup?name=Thyronorm%2050mcg"
+# 4. Find all brands with Metformin
+curl "$BASE/api/medicines/by-salt?salt=Metformin&limit=10"
 
-# 5. Safety Analysis
-curl "https://<your-service>.onrender.com/api/safety/medicine-analysis?drug=Aspirin&conditions=Asthma"
+# 5. Clinical Spec Lookup
+curl "$BASE/api/medicines/lookup?name=Telma%2040"
+
+# 6. Safety Analysis (DDI + contraindications)
+curl "$BASE/api/safety/medicine-analysis?drug=Aspirin&conditions=Asthma"
+
+# 7. Overdose check (GET — simple)
+curl "$BASE/api/safety/overdose-check?medicines=Dolo650,Calpol500,Combiflam"
+
+# 7b. Overdose check (POST — handles spaces, recommended)
+curl -X POST "$BASE/api/safety/overdose-check" \
+  -H "Content-Type: application/json" \
+  -d '{"medicines": ["Dolo 650", "Calpol 500", "Combiflam"]}'
 ```
 
 ---
 
 ## 🌐 How to Host on Render (Step-by-Step Guide)
 
-You can deploy SimplePharmaAPI to Render in under 60 seconds.
-
-### Step 1: Push Code to Your GitHub
+### Step 1: Push to GitHub
 ```bash
 git add .
-git commit -m "feat: complete standalone SimplePharmaAPI with 256k medicines"
+git commit -m "feat: SimplePharmaAPI with overdose checker"
 git push origin main
 ```
 
----
+### Step 2: Deploy on Render
 
-### Step 2: Choose Deployment Method on Render
+#### Option A: Blueprint (Recommended — Zero Config)
+1. Go to [Render Dashboard](https://dashboard.render.com/)
+2. Click **New +** → **Blueprint**
+3. Connect GitHub → select **`SimplePharmaAPI`** repo
+4. Render auto-detects [`render.yaml`](file:///home/vishnunandan555/Projects/SimplePharmaAPI/render.yaml) and pre-fills:
+   - **Runtime**: `Node` | **Plan**: `Free ($0/mo)` | **Region**: `Singapore`
+   - **Build**: `npm install --include=dev && npm run build`
+   - **Start**: `npm run start`
+5. Add `GEMINI_API_KEY` under Environment Variables (optional)
+6. Click **Apply**
 
-#### Option A: Using "Blueprint" (Recommended — Zero Configuration)
-1. Go to your [Render Dashboard](https://dashboard.render.com/).
-2. Click **New +** in the top-right corner and select **Blueprint**.
-3. Connect your GitHub account and select the **`SimplePharmaAPI`** repository.
-4. Render automatically detects [`render.yaml`](file:///home/vishnunandan555/Projects/SimplePharmaAPI/render.yaml) and pre-fills all configuration:
-   - **Runtime**: `Node`
-   - **Plan**: `Free` ($0/mo)
-   - **Region**: `Singapore` (nearest to India for low latency)
-   - **Build Command**: `npm install --include=dev && npm run build`
-   - **Start Command**: `npm run start`
-   - **Health Check Path**: `/api/health`
-5. *(Optional)* Under Environment Variables, set your `GEMINI_API_KEY`.
-6. Click **Apply**. Render will build and deploy the API automatically.
+#### Option B: Web Service (Manual)
 
----
+| Setting | Value |
+| :--- | :--- |
+| **Name** | `simple-pharma-api` |
+| **Region** | `Singapore` (lowest latency for India) |
+| **Branch** | `main` |
+| **Runtime** | `Node` |
+| **Build Command** | `npm install --include=dev && npm run build` |
+| **Start Command** | `npm run start` |
+| **Instance Type** | **Free ($0/month)** |
+| **Health Check Path** | `/api/health` |
 
-#### Option B: Using "Web Service" (Manual Setup)
-If you click **New +** ➔ **Web Service**:
-1. Select your **`SimplePharmaAPI`** repository.
-2. Fill in the following fields:
-   | Setting | Value to Choose | Why |
-   | :--- | :--- | :--- |
-   | **Name** | `simple-pharma-api` | Your public URL will be `https://simple-pharma-api.onrender.com` |
-   | **Region** | `Singapore` | Lowest latency for users in India & Asia |
-   | **Branch** | `main` | Production branch |
-   | **Runtime** | `Node` | Node.js environment |
-   | **Build Command** | `npm install --include=dev && npm run build` | Builds the SQLite catalog and compiles TypeScript |
-   | **Start Command** | `npm run start` | Boots the Express server |
-   | **Instance Type** | **Free ($0/month)** | 100% free tier with 512 MB RAM |
-3. Under **Advanced**, set:
-   - **Health Check Path**: `/api/health`
-4. Under **Environment Variables**, add:
-   - `NODE_ENV` = `production`
-   - `GEMINI_API_KEY` = `your_google_ai_studio_key` *(optional, for uncataloged brand resolution)*
-   - `GEMINI_MODEL` = `gemini-flash-latest` *(optional, defaults to active free tier)*
-5. Click **Create Web Service**.
+**Environment Variables:**
+| Key | Value | Required |
+| :--- | :--- | :--- |
+| `NODE_ENV` | `production` | Yes |
+| `GEMINI_API_KEY` | Your Google AI Studio key | Optional |
+| `GEMINI_MODEL` | `gemini-flash-latest` | Optional |
 
----
+### Step 3: Keep Awake 24/7 (Free)
 
-### Step 3: Keep Your Service Awake 24/7 for Free
-
-Render's free tier spins down after 15 minutes of inactivity. To keep your API hot 24/7 with zero cold starts:
-1. Sign up for free on [cron-job.org](https://cron-job.org/) or [UptimeRobot](https://uptimerobot.com/).
-2. Create a new HTTP monitor:
-   - **URL**: `https://<your-service-name>.onrender.com/api/health`
-   - **Execution interval**: Every 10 minutes.
-3. **Result**: Your API stays permanently warm and responds in sub-10ms around the clock!
+Render free tier sleeps after 15 min inactivity. To prevent cold starts:
+1. Sign up at [cron-job.org](https://cron-job.org/) or [UptimeRobot](https://uptimerobot.com/) (both free)
+2. Create HTTP monitor → URL: `https://simple-pharma-api.onrender.com/api/health`
+3. Set interval: **every 10 minutes**
 
 ---
 
-## 🛠️ Local Development & Testing
+## 🛠️ Local Development
 
 ```bash
 # Install dependencies
 npm install
 
-# Run in development mode with hot-reload
+# Run in development mode (hot-reload)
 npm run dev
 
-# Run automated integration tests (8/8 tests pass)
+# Run integration tests
 npm test
 
-# Build production bundle and build SQLite catalog
+# Build production bundle + SQLite catalog
 npm run build
 
 # Start production server

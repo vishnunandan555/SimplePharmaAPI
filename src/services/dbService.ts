@@ -97,6 +97,31 @@ export function getIndexedMedicineCount(): number {
 }
 
 /**
+ * Tier-2 ceiling fallback for overdose checker.
+ * Queries the SQLite DB for the maximum recorded daily dose ceiling
+ * for any medicine whose generic_name contains the given salt name.
+ * Returns null if no data found or DB not available.
+ */
+export async function getMaxDailyMgFromDb(saltName: string): Promise<number | null> {
+  if (!sqliteDb) return null;
+  try {
+    const normalizedSalt = saltName.toLowerCase().replace(/[^a-z0-9]/g, "");
+    const row = sqliteDb
+      .prepare(
+        `SELECT MAX(max_daily_ceiling_mg) AS max_mg
+         FROM medicines
+         WHERE LOWER(REPLACE(REPLACE(generic_name, ' ', ''), '-', '')) LIKE ?
+           AND max_daily_ceiling_mg IS NOT NULL
+           AND max_daily_ceiling_mg > 0`
+      )
+      .get(`%${normalizedSalt}%`) as any;
+    return row?.max_mg ?? null;
+  } catch {
+    return null;
+  }
+}
+
+/**
  * Format active ingredients into display strength string
  */
 function formatStrength(salts: Array<{ salt: string; strength: number; unit: string }>): string {
