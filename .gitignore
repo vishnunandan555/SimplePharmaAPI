@@ -1,0 +1,15 @@
+node_modules/
+dist/
+.env
+.env.local
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.DS_Store
+coverage/
+
+# Keep compressed dataset (data/indian_medicine_data.csv.gz, 6.3MB), ignore extracted/generated files (>100MB)
+data/*.csv
+data/*.db
+data/*.db-journal
