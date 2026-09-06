@@ -123,8 +123,36 @@ async function runTests() {
     }
     console.log("✅ Passed: Sub-5ms search latency and ultra-lightweight memory footprint!");
 
+    // 9. Overdose Check: Flavospas 200mg & Pantocid 40
+    console.log("\n[TEST 9] POST /api/safety/overdose-check (Flavospas 200mg + Pantocid 40)");
+    const odRes = await fetch(`${BASE_URL}/api/safety/overdose-check`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ medicines: ["Flavospas 200mg", "Pantocid 40"] }),
+    });
+    const odData = await odRes.json();
+    console.log("Overdose Output:", JSON.stringify(odData.salt_aggregation, null, 2));
+    if (odRes.status !== 200) {
+      throw new Error(`Overdose check failed with status ${odRes.status}`);
+    }
+    const flavoxate = odData.salt_aggregation.find((s: any) => s.salt.toLowerCase().includes("flavoxate"));
+    if (!flavoxate) {
+      throw new Error("Flavoxate salt aggregation not found!");
+    }
+    if (flavoxate.risk_level !== "SAFE") {
+      throw new Error(`Expected Flavoxate to be SAFE, got: ${flavoxate.risk_level} (${flavoxate.message})`);
+    }
+    if (flavoxate.max_safe_daily_dose_mg !== 800 || flavoxate.max_safe_single_dose_mg !== 200) {
+      throw new Error(`Unexpected Flavoxate ceilings: daily=${flavoxate.max_safe_daily_dose_mg}, single=${flavoxate.max_safe_single_dose_mg}`);
+    }
+    const panto = odData.salt_aggregation.find((s: any) => s.salt.toLowerCase().includes("pantoprazole"));
+    if (panto && panto.risk_level !== "SAFE") {
+      throw new Error(`Expected Pantoprazole to be SAFE, got: ${panto.risk_level}`);
+    }
+    console.log("✅ Passed: Flavoxate 200mg evaluated as SAFE with 800mg daily ceiling.");
+
     console.log("\n==================================================");
-    console.log("🎉 ALL TESTS PASSED SUCCESSFULLY (8/8)!");
+    console.log("🎉 ALL TESTS PASSED SUCCESSFULLY (9/9)!");
     console.log("==================================================");
   } finally {
     server.close();

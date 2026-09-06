@@ -35,6 +35,7 @@ export const SYNONYM_MAP: Record<string, string> = {
   pantop: "pantoprazole",
   pan: "pantoprazole",
   pantocid: "pantoprazole",
+  flavospas: "flavoxate",
   augmentin: "amoxicillin and clavulanate potassium",
   combiflam: "ibuprofen and paracetamol",
 };

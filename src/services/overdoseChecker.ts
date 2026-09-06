@@ -118,19 +118,19 @@ function assessRisk(
   if (singleDoseCeiling && totalMg > singleDoseCeiling * 1.5) {
     return {
       risk_level: "DANGER",
-      message: `⛔ DANGER: Combined ${ceiling.salt} dose is ${totalMg.toFixed(1)} mg — ${Math.round(totalMg / singleDoseCeiling * 100 - 100)}% above the safe single-dose ceiling of ${singleDoseCeiling} mg. Do NOT take these medicines simultaneously.`,
+      message: `⛔ DANGER: Combined ${ceiling.salt} dose is ${totalMg.toFixed(1)} mg — ${Math.round(totalMg / singleDoseCeiling * 100 - 100)}% above the safe single-dose ceiling of ${singleDoseCeiling} mg.${isDuplicate ? " Do NOT take these medicines simultaneously." : " Consult physician before taking this dose."}`,
     };
   }
   if (singleDoseCeiling && totalMg > singleDoseCeiling) {
     return {
       risk_level: "WARNING",
-      message: `⚠️ WARNING: Combined ${ceiling.salt} dose is ${totalMg.toFixed(1)} mg — exceeds safe single-dose limit of ${singleDoseCeiling} mg. Avoid taking all these medicines at the same time.`,
+      message: `⚠️ WARNING: Combined ${ceiling.salt} dose is ${totalMg.toFixed(1)} mg — exceeds safe single-dose limit of ${singleDoseCeiling} mg.${isDuplicate ? " Avoid taking all these medicines at the same time." : " Consult physician to adjust dose."}`,
     };
   }
-  if (singleDoseCeiling && totalMg > singleDoseCeiling * 0.8) {
+  if (singleDoseCeiling && totalMg > singleDoseCeiling * 0.8 && isDuplicate) {
     return {
       risk_level: "CAUTION",
-      message: `🟡 CAUTION: Combined ${ceiling.salt} dose is ${totalMg.toFixed(1)} mg — within 20% of the single-dose ceiling (${singleDoseCeiling} mg).${isDuplicate ? " Same salt found in multiple medicines — review with your doctor." : ""}`,
+      message: `🟡 CAUTION: Combined ${ceiling.salt} dose is ${totalMg.toFixed(1)} mg — within 20% of the single-dose ceiling (${singleDoseCeiling} mg). Same salt found in multiple medicines — review with your doctor.`,
     };
   }
   if (isDuplicate) {

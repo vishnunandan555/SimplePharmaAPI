@@ -349,6 +349,33 @@ export const MASTER_MEDICINE_CATALOG: MedicineRecord[] = [
     "source": "featured_catalog"
   },
   {
+    "id": "med-flavospas-200-tablet",
+    "brand_name": "Flavospas 200mg Tablet",
+    "normalized_brand": "flavospas 200mg tablet",
+    "generic_name": "Flavoxate",
+    "normalized_generic": "flavoxate",
+    "active_ingredients": [
+      {
+        "salt": "Flavoxate",
+        "strength": 200,
+        "unit": "mg"
+      }
+    ],
+    "dosage_form": "tablet",
+    "manufacturer": "Abbott India Ltd",
+    "therapeutic_class": "Urinary Antispasmodic",
+    "food_relation": "after",
+    "food_badge": "🍽️ With or After Meals",
+    "food_instruction": "Take with or after meals to minimize stomach upset.",
+    "recommended_frequency": "3x",
+    "frequency_label": "3x Daily",
+    "is_critical": false,
+    "senior_safe_ceiling_mg": 400,
+    "max_daily_ceiling_mg": 800,
+    "fda_application_number": "ANDA088825",
+    "source": "featured_catalog"
+  },
+  {
     "id": "med-shelcal-500-tablet",
     "brand_name": "Shelcal 500 Tablet",
     "normalized_brand": "shelcal 500 tablet",

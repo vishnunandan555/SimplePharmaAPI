@@ -768,6 +768,17 @@ export const SALT_CEILINGS: SaltCeiling[] = [
     therapeutic_class: "Antiparasitic",
     notes: "Dose is weight-based (200 mcg/kg). Ceiling stored as weight-normalized mg estimate.",
   },
+
+  // ── Urologicals / Smooth Muscle Antispasmodics ────────────────────────────
+  {
+    canonical_name: "Flavoxate",
+    aliases: ["Flavoxate Hydrochloride", "Flavoxate HCl", "Flavoxate IP"],
+    max_single_dose_mg: 200,
+    max_daily_dose_mg: 800,
+    senior_daily_max_mg: 400,
+    therapeutic_class: "Urinary Antispasmodic / Smooth Muscle Relaxant",
+    notes: "Standard adult dose: 200mg 3–4 times daily (max 800mg/day). Contraindicated in obstructive GI or urinary tract uropathy.",
+  },
 ];
 
 // ─────────────────────────────────────────────────────────────────────────────
